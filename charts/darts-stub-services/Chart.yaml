@@ -1,7 +1,7 @@
 apiVersion: v2
 appVersion: "1.0"
 description: A Helm chart for darts-stub-services App
-name: darts-darts-stub-services
+name: darts-stub-services
 home: https://github.com/hmcts/darts-stub-services
 version: 0.0.9
 maintainers:
