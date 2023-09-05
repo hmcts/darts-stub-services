@@ -10,7 +10,7 @@ plugins {
   id 'org.sonarqube' version '4.3.0.3225'
 }
 
-group = 'uk.gov.hmcts.reform'
+group = 'uk.gov.hmcts.darts'
 version = '0.0.1'
 
 java {
@@ -130,8 +130,8 @@ project.tasks['check'].dependsOn integration
 
 sonarqube {
   properties {
-    property "sonar.projectName", "Reform :: spring-boot-template"
-    property "sonar.projectKey", "uk.gov.hmcts.reform:spring-boot-template"
+    property "sonar.projectName", "Darts :: darts-stub-services"
+    property "sonar.projectKey", "uk.gov.hmcts.darts:darts-stub-services"
   }
 }
 
@@ -195,6 +195,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: log4JVersion
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
+  implementation (group: 'com.github.tomakehurst', name: 'wiremock-jre8-standalone', version: '2.35.0')
 
   testImplementation(platform('org.junit:junit-bom:5.10.0'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
@@ -204,10 +205,10 @@ dependencies {
   }
 }
 
-mainClassName = 'uk.gov.hmcts.reform.demo.Application'
+mainClassName = 'uk.gov.hmcts.darts.stub.services.Application'
 
 bootJar {
-  archiveFileName = "spring-boot-template.jar"
+  archiveFileName = "darts-stub-services.jar"
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
