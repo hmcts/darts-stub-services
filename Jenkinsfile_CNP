@@ -19,7 +19,6 @@ withPipeline(type, product, component) {
       sh "rm -rf infrastructure/"
     }
   }
-  loadVaultSecrets(secrets)
   enableSlackNotifications('#darts-builds')
   syncBranchesWithMaster(branchesToSync)
 
