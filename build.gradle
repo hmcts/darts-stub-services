@@ -130,8 +130,10 @@ project.tasks['check'].dependsOn integration
 
 sonarqube {
   properties {
-    property "sonar.projectName", "Darts :: darts-stub-services"
-    property "sonar.projectKey", "uk.gov.hmcts.darts:darts-stub-services"
+    property "sonar.projectName", "Reform :: darts-stub-services"
+    property "sonar.projectKey", "uk.gov.hmcts.reform:darts-stub-services"
+    property "sonar.exclusions", sonarExclusions.join(', ')
+
   }
 }
 
