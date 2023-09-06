@@ -2,12 +2,13 @@
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.GradleBuilder
+
 def type = "java"
 def product = "darts"
 def component = "stub-services"
 
 def branchesToSync = ['demo']
-
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
