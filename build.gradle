@@ -128,7 +128,10 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 project.tasks['check'].dependsOn integration
 
-def sonarExclusions = []
+def sonarExclusions = [
+  '**/uk/gov/hmcts/darts/stub/services/config/**',
+  '**/uk/gov/hmcts/darts/stub/services/Application.java',
+]
 
 sonarqube {
   properties {

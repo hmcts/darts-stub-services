@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +20,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.valueOf;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Default endpoints per application.
@@ -47,57 +49,69 @@ public class WiremockProxyController {
         this.mockHttpServer = mockHttpServer;
     }
 
-    @GetMapping(value = "**", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "**", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> forwardGetRequests(HttpServletRequest request) throws InterruptedException {
         try {
-            String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            var httpRequest = HttpRequest
+                .newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .build();
-            HttpResponse httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            return new ResponseEntity<Object>(httpResponse.body().toString(),
-                HttpStatus.valueOf(httpResponse.statusCode()));
+            var httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            return new ResponseEntity<>(
+                httpResponse.body(),
+                valueOf(httpResponse.statusCode())
+            );
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
         }
     }
 
-    @PostMapping(value = "**", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "**", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request) throws InterruptedException {
         try {
-            String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            final String requestBody = IOUtils.toString(request.getInputStream());
-            HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            var requestBody = IOUtils.toString(request.getInputStream());
+            var httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
-            HttpResponse httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            return new ResponseEntity<Object>(httpResponse.body().toString(),
-                HttpStatus.valueOf(httpResponse.statusCode()));
+
+            var httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            return new ResponseEntity<>(
+                httpResponse.body(),
+                valueOf(httpResponse.statusCode())
+            );
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
         }
     }
 
-    @PutMapping(value = "**", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "**", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> forwardPutRequests(HttpServletRequest request) throws InterruptedException {
         try {
-            String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            final String requestBody = IOUtils.toString(request.getInputStream());
-            HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            var requestBody = IOUtils.toString(request.getInputStream());
+            var httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
-            HttpResponse httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            return new ResponseEntity<Object>(httpResponse.body().toString(),
-                HttpStatus.valueOf(httpResponse.statusCode()));
+
+            var httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            return new ResponseEntity<>(
+                httpResponse.body(),
+                valueOf(httpResponse.statusCode())
+            );
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
         }
     }
@@ -105,17 +119,21 @@ public class WiremockProxyController {
     @DeleteMapping("**")
     public ResponseEntity<Object> forwardDeleteRequests(HttpServletRequest request) throws InterruptedException {
         try {
-            String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            var httpRequest = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .DELETE()
                 .build();
-            HttpResponse httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            return new ResponseEntity<Object>(httpResponse.body().toString(),
-                HttpStatus.valueOf(httpResponse.statusCode()));
+
+            var httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            return new ResponseEntity<>(
+                httpResponse.body(),
+                valueOf(httpResponse.statusCode())
+            );
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
         }
     }
