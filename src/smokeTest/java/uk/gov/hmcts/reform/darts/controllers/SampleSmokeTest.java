@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.given;
 class SampleSmokeTest {
     protected static final String CONTENT_TYPE_VALUE = "application/json";
 
-    @Value("${TEST_URL:http://localhost:8080}")
+    @Value("${TEST_URL:http://localhost:4551}")
     private String testUrl;
 
     @BeforeEach
@@ -35,5 +35,5 @@ class SampleSmokeTest {
 
         Assertions.assertEquals(200, response.statusCode());
         Assertions.assertTrue(response.asString().startsWith("Welcome"));
-    } 
+    }
 }
