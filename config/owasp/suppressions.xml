@@ -12,5 +12,9 @@
     <notes>Tomcat issue</notes>
     <cve>CVE-2023-41080</cve>
   </suppress>
+  <suppress>
+    <notes>Tomcat issue</notes>
+    <cve>CVE-2023-39967</cve>
+  </suppress>
   <!--End of false positives section -->
 </suppressions>
