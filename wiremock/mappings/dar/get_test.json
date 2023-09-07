@@ -8,10 +8,8 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "jsonBody": [
-      {
-        "success": "true"
-      }
-    ]
+    "jsonBody": {
+      "result": "content"
+    }
   }
 }
