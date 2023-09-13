@@ -4,20 +4,16 @@
     "urlPath": "/VIQDARNotifyEvent/DARNotifyEvent.asmx",
     "headers": {
       "Content-Type": {
-        "equalTo": "text/xml"
+        "contains": "text/xml"
       }
-    },
-    "bodyPatterns": [
-      {
-        "equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <soapenv:Body>\n        <DARNotifyEvent xmlns=\"http://www.VIQSoultions.com\">\n            <XMLEventDocument>&lt;event type=&quot;3&quot; Y=&quot;2023&quot; M=&quot;8&quot; D=&quot;2&quot; H=&quot;14&quot;\n                MIN=&quot;5&quot; S=&quot;44&quot;&gt;&lt;courthouse&gt;SWANSEA&lt;/courthouse&gt;&lt;courtroom&gt;32&lt;/courtroom&gt;&lt;case_numbers&gt;&lt;case_number&gt;T20200191&lt;/case_number&gt;&lt;/case_numbers&gt;&lt;/event&gt;\n            </XMLEventDocument>\n        </DARNotifyEvent>\n    </soapenv:Body>\n</soapenv:Envelope>"
-      }
-    ]
+    }
+
   },
   "response": {
     "status": 201,
     "headers": {
-      "Content-Type": "text/xml"
+      "Content-Type": "text/xml; charset=utf-8"
     },
-    "body":"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n    <soap:Body>\n        <DARNotifyEventResponse xmlns=\"http://www.VIQSoultions.com\">\n            <DARNotifyEventResult>0</DARNotifyEventResult>\n        </DARNotifyEventResponse>\n    </soap:Body>\n</soap:Envelope>"
+    "body":"<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">    <soap:Body>        <DARNotifyEventResponse xmlns=\"http://www.VIQSoultions.com\">            <DARNotifyEventResult>0</DARNotifyEventResult>        </DARNotifyEventResponse>    </soap:Body></soap:Envelope>"
   }
 }

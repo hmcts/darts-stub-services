@@ -23,6 +23,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.valueOf;
@@ -70,14 +71,16 @@ public class WiremockRequestForwardingController {
     public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request) throws InterruptedException {
         try {
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            var requestBody = IOUtils.toString(request.getInputStream());
+            var requestBody = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
             var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
             var forwardRequest =
                 copyHeaders(request, requestBuilder)
-                    .POST(BodyPublishers.ofString(requestBody))
+                    .POST(BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                     .build();
 
-            var httpResponse = httpClient.send(forwardRequest, HttpResponse.BodyHandlers.ofString());
+            var httpResponse = httpClient.send(
+                forwardRequest,
+                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             return getObjectResponseEntity(httpResponse);
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
@@ -128,9 +131,13 @@ public class WiremockRequestForwardingController {
 
     private ResponseEntity<Object> getObjectResponseEntity(HttpResponse<String> httpResponse) {
         var responseContentType = httpResponse.headers().firstValue("Content-Type").orElse(null);
+        var responseContentLength = httpResponse.headers().firstValue("Content-Length").orElse(null);
         var headers = new LinkedMultiValueMap<String, String>();
         if (responseContentType != null) {
             headers.add("Content-Type", responseContentType);
+        }
+        if (responseContentLength != null) {
+            headers.add("Content-Length", responseContentLength);
         }
 
         return new ResponseEntity<>(
