@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/xml_test",
+    "urlPath": "/test",
     "headers": {
       "Content-Type": {
         "equalTo": "text/xml"

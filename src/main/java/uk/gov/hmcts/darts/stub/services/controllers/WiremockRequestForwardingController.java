@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,19 +16,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpRequest.Builder;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.valueOf;
 
 @RestController
 @RequestMapping("/")
@@ -39,88 +40,45 @@ public class WiremockRequestForwardingController {
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
 
-    private final HttpClient httpClient;
+    private final RestTemplate restTemplate;
 
     private final MockHttpServer mockHttpServer;
 
-    public WiremockRequestForwardingController(HttpClient httpClient, MockHttpServer mockHttpServer) {
-        this.httpClient = httpClient;
+    public WiremockRequestForwardingController(RestTemplate restTemplate, MockHttpServer mockHttpServer) {
+        this.restTemplate = restTemplate;
         this.mockHttpServer = mockHttpServer;
     }
 
     @GetMapping("**")
-    public ResponseEntity<Object> forwardGetRequests(HttpServletRequest request) throws InterruptedException {
-        try {
-            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
-            var forwardRequest = copyHeaders(request, requestBuilder).GET().build();
-
-            var httpResponse = httpClient.send(forwardRequest, HttpResponse.BodyHandlers.ofString());
-            return getObjectResponseEntity(httpResponse);
-        } catch (IOException e) {
-            LOG.error(ERROR_OCCURRED, e);
-            return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(e.getMessage());
-        }
+    public ResponseEntity<String> forwardGetRequests(HttpServletRequest request) {
+        return forwardRequestForMethod(request, GET);
     }
-
 
 
     @PostMapping("**")
-    public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request) throws InterruptedException {
-        try {
-            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            var requestBody = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-            var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
-            var forwardRequest =
-                copyHeaders(request, requestBuilder)
-                    .POST(BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                    .build();
-
-            var httpResponse = httpClient.send(
-                forwardRequest,
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-            return getObjectResponseEntity(httpResponse);
-        } catch (IOException e) {
-            LOG.error(ERROR_OCCURRED, e);
-            return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(e.getMessage());
-        }
+    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request) {
+        return forwardRequestForMethod(request, POST);
     }
 
     @PutMapping("**")
-    public ResponseEntity<Object> forwardPutRequests(HttpServletRequest request) throws InterruptedException {
-        try {
-            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            var requestBody = IOUtils.toString(request.getInputStream());
-            var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
-            var forwardRequest = copyHeaders(request, requestBuilder).PUT(BodyPublishers.ofString(requestBody)).build();
-
-            var httpResponse = httpClient.send(forwardRequest, HttpResponse.BodyHandlers.ofString());
-            return getObjectResponseEntity(httpResponse);
-        } catch (IOException e) {
-            LOG.error(ERROR_OCCURRED, e);
-            return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(e.getMessage());
-        }
+    public ResponseEntity<String> forwardPutRequests(HttpServletRequest request) {
+        return forwardRequestForMethod(request, PUT);
     }
 
     @DeleteMapping("**")
-    public ResponseEntity<Object> forwardDeleteRequests(HttpServletRequest request) throws InterruptedException {
+    public ResponseEntity<String> forwardDeleteRequests(HttpServletRequest request) {
+        return forwardRequestForMethod(request, DELETE);
+    }
+
+    private ResponseEntity<String> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
         try {
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
-            var forwardRequest = copyHeaders(request, requestBuilder).DELETE().build();
+            var uri = URI.create(getMockHttpServerUrl(requestPath));
+            var requestBody = IOUtils.toString(request.getInputStream(), UTF_8);
+            var headers = copyHeaders(request);
+            var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
 
-            var httpResponse = httpClient.send(forwardRequest, HttpResponse.BodyHandlers.ofString());
-
-            return new ResponseEntity<>(
-                httpResponse.body(),
-                valueOf(httpResponse.statusCode())
-            );
+            return restTemplate.exchange(forwardRequest, String.class);
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
@@ -129,40 +87,23 @@ public class WiremockRequestForwardingController {
         }
     }
 
-    private ResponseEntity<Object> getObjectResponseEntity(HttpResponse<String> httpResponse) {
-        var responseContentType = httpResponse.headers().firstValue("Content-Type").orElse(null);
-        var responseContentLength = httpResponse.headers().firstValue("Content-Length").orElse(null);
-        var headers = new LinkedMultiValueMap<String, String>();
-        if (responseContentType != null) {
-            headers.add("Content-Type", responseContentType);
-        }
-        if (responseContentLength != null) {
-            headers.add("Content-Length", responseContentLength);
-        }
-
-        return new ResponseEntity<>(
-            httpResponse.body(),
-            headers,
-            valueOf(httpResponse.statusCode())
-        );
-    }
-
-    private static Builder copyHeaders(HttpServletRequest request, Builder requestBuilder) {
+    private static LinkedMultiValueMap<String, String> copyHeaders(HttpServletRequest request) {
         var headerNames = request.getHeaderNames();
+        var headers = new LinkedMultiValueMap<String, String>();
         while (headerNames.hasMoreElements()) {
             var headerName = headerNames.nextElement();
-            if (notExcluded(headerName)) {
-                requestBuilder.header(headerName, request.getHeader(headerName));
+            if (!excluded(headerName)) {
+                headers.add(headerName, request.getHeader(headerName));
             }
         }
 
-        return requestBuilder;
+        return headers;
     }
 
-    private static boolean notExcluded(String headerName) {
-        return !"host".equalsIgnoreCase(headerName)
-            && !"connection".equalsIgnoreCase(headerName)
-            && !"content-length".equalsIgnoreCase(headerName);
+    private static boolean excluded(String headerName) {
+        return "host".equalsIgnoreCase(headerName)
+            || "connection".equalsIgnoreCase(headerName)
+            || "content-length".equalsIgnoreCase(headerName);
     }
 
     private String getMockHttpServerUrl(String requestPath) {

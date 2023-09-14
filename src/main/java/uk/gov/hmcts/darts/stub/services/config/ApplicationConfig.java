@@ -3,15 +3,14 @@ package uk.gov.hmcts.darts.stub.services.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.net.http.HttpClient;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class ApplicationConfig {
 
-    @Bean(name = "httpClient")
-    public HttpClient httpClient() {
-        return HttpClient.newHttpClient();
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @Bean(name = "objectMapper")
