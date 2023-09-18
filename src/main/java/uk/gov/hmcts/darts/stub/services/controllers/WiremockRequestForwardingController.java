@@ -67,7 +67,8 @@ public class WiremockRequestForwardingController {
 
 
     @PostMapping("**")
-    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request) {
+    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request)
+        throws InterruptedException, IOException {
         try {
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
             final var requestBody = IOUtils.toString(request.getInputStream());
@@ -84,9 +85,7 @@ public class WiremockRequestForwardingController {
             );
         } catch (IOException | InterruptedException e) {
             LOG.error("Error occurred", e);
-            return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(e.getMessage());
+            throw e;
         }
     }
 
