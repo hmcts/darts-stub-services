@@ -10,6 +10,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +22,20 @@ import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpRequest.Builder;
+import java.net.http.HttpResponse;
 
+import static java.lang.String.join;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.valueOf;
 
 @RestController
 @RequestMapping("/")
@@ -43,10 +51,13 @@ public class WiremockRequestForwardingController {
     private final RestTemplate restTemplate;
 
     private final MockHttpServer mockHttpServer;
+    private final HttpClient httpClient;
 
-    public WiremockRequestForwardingController(RestTemplate restTemplate, MockHttpServer mockHttpServer) {
+    public WiremockRequestForwardingController(RestTemplate restTemplate, MockHttpServer mockHttpServer,
+                                               HttpClient httpClient) {
         this.restTemplate = restTemplate;
         this.mockHttpServer = mockHttpServer;
+        this.httpClient = httpClient;
     }
 
     @GetMapping("**")
@@ -56,8 +67,36 @@ public class WiremockRequestForwardingController {
 
 
     @PostMapping("**")
-    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request) {
-        return forwardRequestForMethod(request, POST);
+    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request)
+        throws InterruptedException, IOException {
+        try {
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            final var requestBody = IOUtils.toString(request.getInputStream());
+            var postBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+                .POST(BodyPublishers.ofString(requestBody));
+            addHeaders(request, postBuilder);
+
+            var httpResponse = httpClient.send(postBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            var responseHeaders = copyResponseHeaders(httpResponse.headers());
+            return new ResponseEntity<>(
+                httpResponse.body(),
+                responseHeaders,
+                valueOf(httpResponse.statusCode())
+            );
+        } catch (IOException | InterruptedException e) {
+            LOG.error("Error occurred", e);
+            throw e;
+        }
+    }
+
+    private MultiValueMap<String, String> copyResponseHeaders(HttpHeaders headers) {
+        var headerMap = new LinkedMultiValueMap<String, String>();
+        headers.map().forEach((key, value) -> headerMap.add(key, join(";", value)));
+        return headerMap;
+    }
+
+    private void addHeaders(HttpServletRequest request, Builder postBuilder) {
+        copyHeaders(request).forEach((key, value) -> postBuilder.header(key, join(";", value)));
     }
 
     @PutMapping("**")
