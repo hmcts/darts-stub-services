@@ -23,7 +23,7 @@ spring:
 
 wiremock:
   server:
-    host: localhost
+    host: 127.0.0.1
     mappings-path: ${WIREMOCK_SERVER_MAPPINGS_PATH:wiremock}
 
 azure:
