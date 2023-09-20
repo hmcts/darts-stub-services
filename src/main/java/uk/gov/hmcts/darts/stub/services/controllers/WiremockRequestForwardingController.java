@@ -10,7 +10,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,20 +21,13 @@ import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpRequest.Builder;
-import java.net.http.HttpResponse;
 
-import static java.lang.String.join;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.valueOf;
 
 @RestController
 @RequestMapping("/")
@@ -51,13 +43,10 @@ public class WiremockRequestForwardingController {
     private final RestTemplate restTemplate;
 
     private final MockHttpServer mockHttpServer;
-    private final HttpClient httpClient;
 
-    public WiremockRequestForwardingController(RestTemplate restTemplate, MockHttpServer mockHttpServer,
-                                               HttpClient httpClient) {
+    public WiremockRequestForwardingController(RestTemplate restTemplate, MockHttpServer mockHttpServer) {
         this.restTemplate = restTemplate;
         this.mockHttpServer = mockHttpServer;
-        this.httpClient = httpClient;
     }
 
     @GetMapping("**")
@@ -67,38 +56,8 @@ public class WiremockRequestForwardingController {
 
 
     @PostMapping("**")
-    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        try {
-            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            final var requestBody = IOUtils.toString(request.getInputStream());
-            var postBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
-                .POST(BodyPublishers.ofString(requestBody));
-            addHeaders(request, postBuilder);
-
-            LOG.info("Forwarding POST request");
-            var httpResponse = httpClient.send(postBuilder.build(), HttpResponse.BodyHandlers.ofString());
-            LOG.info("http response received for POST request");
-            var responseHeaders = copyResponseHeaders(httpResponse.headers());
-            return new ResponseEntity<>(
-                httpResponse.body(),
-                responseHeaders,
-                valueOf(httpResponse.statusCode())
-            );
-        } catch (IOException | InterruptedException e) {
-            LOG.error("Error occurred", e);
-            throw e;
-        }
-    }
-
-    private MultiValueMap<String, String> copyResponseHeaders(HttpHeaders headers) {
-        var headerMap = new LinkedMultiValueMap<String, String>();
-        headers.map().forEach((key, value) -> headerMap.add(key, join(";", value)));
-        return headerMap;
-    }
-
-    private void addHeaders(HttpServletRequest request, Builder postBuilder) {
-        copyHeaders(request).forEach((key, value) -> postBuilder.header(key, join(";", value)));
+    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request) {
+        return forwardRequestForMethod(request, POST);
     }
 
     @PutMapping("**")
@@ -113,23 +72,23 @@ public class WiremockRequestForwardingController {
 
     private ResponseEntity<String> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
         try {
-            LOG.info("recieved request for method {}", get.name());
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            LOG.info("creating URI for method {}", get.name());
+            LOG.info("request path: {}", requestPath);
             var uri = URI.create(getMockHttpServerUrl(requestPath));
-            LOG.info("creating request entity for method {}", get.name());
+            LOG.info("creating URI: {}", uri);
             var requestBody = IOUtils.toString(request.getInputStream(), UTF_8);
-            LOG.info("copying headers for method {}", get.name());
+            LOG.info("creating request body: {}", requestBody);
             var headers = copyHeaders(request);
-            LOG.info("creating request entity for method {}", get.name());
+            LOG.info("copying headers:");
+            headers.forEach((key, value) -> LOG.info(key + ": " + value));
             var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
-
             LOG.info("Forwarding POST request");
             ResponseEntity<String> exchange = restTemplate.exchange(forwardRequest, String.class);
-            LOG.info("http response received for POST request");
+            LOG.info("http response received for POST request: {}", exchange.getBody());
             return exchange;
 
         } catch (IOException e) {
+            LOG.info("Error forwarding request", e);
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
@@ -142,8 +101,11 @@ public class WiremockRequestForwardingController {
         var headers = new LinkedMultiValueMap<String, String>();
         while (headerNames.hasMoreElements()) {
             var headerName = headerNames.nextElement();
-            if (!excluded(headerName)) {
+            if (excluded(headerName)) {
+                LOG.info("Excluding header {}", headerName);
+            } else {
                 headers.add(headerName, request.getHeader(headerName));
+                LOG.info("Including header {}", headerName);
             }
         }
 
