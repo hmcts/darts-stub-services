@@ -113,10 +113,15 @@ public class WiremockRequestForwardingController {
 
     private ResponseEntity<String> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
         try {
+            LOG.info("recieved request for method {}", get.name());
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            LOG.info("creating URI for method {}", get.name());
             var uri = URI.create(getMockHttpServerUrl(requestPath));
+            LOG.info("creating request entity for method {}", get.name());
             var requestBody = IOUtils.toString(request.getInputStream(), UTF_8);
+            LOG.info("copying headers for method {}", get.name());
             var headers = copyHeaders(request);
+            LOG.info("creating request entity for method {}", get.name());
             var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
 
             LOG.info("Forwarding POST request");
