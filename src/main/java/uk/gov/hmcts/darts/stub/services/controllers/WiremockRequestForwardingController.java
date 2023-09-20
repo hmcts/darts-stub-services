@@ -76,7 +76,9 @@ public class WiremockRequestForwardingController {
                 .POST(BodyPublishers.ofString(requestBody));
             addHeaders(request, postBuilder);
 
+            LOG.info("Forwarding POST request");
             var httpResponse = httpClient.send(postBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            LOG.info("http response received for POST request");
             var responseHeaders = copyResponseHeaders(httpResponse.headers());
             return new ResponseEntity<>(
                 httpResponse.body(),
@@ -111,13 +113,22 @@ public class WiremockRequestForwardingController {
 
     private ResponseEntity<String> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
         try {
+            LOG.info("recieved request for method {}", get.name());
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            LOG.info("creating URI for method {}", get.name());
             var uri = URI.create(getMockHttpServerUrl(requestPath));
+            LOG.info("creating request entity for method {}", get.name());
             var requestBody = IOUtils.toString(request.getInputStream(), UTF_8);
+            LOG.info("copying headers for method {}", get.name());
             var headers = copyHeaders(request);
+            LOG.info("creating request entity for method {}", get.name());
             var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
 
-            return restTemplate.exchange(forwardRequest, String.class);
+            LOG.info("Forwarding POST request");
+            ResponseEntity<String> exchange = restTemplate.exchange(forwardRequest, String.class);
+            LOG.info("http response received for POST request");
+            return exchange;
+
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
