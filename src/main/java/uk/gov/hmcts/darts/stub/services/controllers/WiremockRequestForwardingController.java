@@ -76,7 +76,9 @@ public class WiremockRequestForwardingController {
                 .POST(BodyPublishers.ofString(requestBody));
             addHeaders(request, postBuilder);
 
+            LOG.info("Forwarding POST request");
             var httpResponse = httpClient.send(postBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            LOG.info("http response received for POST request");
             var responseHeaders = copyResponseHeaders(httpResponse.headers());
             return new ResponseEntity<>(
                 httpResponse.body(),
@@ -117,7 +119,11 @@ public class WiremockRequestForwardingController {
             var headers = copyHeaders(request);
             var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
 
-            return restTemplate.exchange(forwardRequest, String.class);
+            LOG.info("Forwarding POST request");
+            ResponseEntity<String> exchange = restTemplate.exchange(forwardRequest, String.class);
+            LOG.info("http response received for POST request");
+            return exchange;
+
         } catch (IOException e) {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
