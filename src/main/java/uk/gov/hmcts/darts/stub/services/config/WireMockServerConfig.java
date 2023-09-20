@@ -47,6 +47,7 @@ public class WireMockServerConfig {
 
         if (mappingDirectory.isDirectory()) {
             return options()
+                .stubCorsEnabled(false)
                 .dynamicHttpsPort()
                 .dynamicPort()
                 .usingFilesUnderDirectory(mappingsPath)
@@ -54,6 +55,7 @@ public class WireMockServerConfig {
         } else {
             LOG.info("using classpath resources to resolve mappings");
             return options()
+                .stubCorsEnabled(false)
                 .dynamicHttpsPort()
                 .dynamicPort()
                 .usingFilesUnderClasspath(mappingsPath)
