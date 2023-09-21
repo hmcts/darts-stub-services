@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.LinkedMultiValueMap;
@@ -16,17 +14,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.Builder;
+import java.net.http.HttpResponse;
 
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.valueOf;
 
 @RestController
 @RequestMapping("/")
@@ -39,74 +37,99 @@ public class WiremockRequestForwardingController {
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
 
-    private final RestTemplate restTemplate;
-
+    private final HttpClient httpClient;
     private final MockHttpServer mockHttpServer;
 
-    public WiremockRequestForwardingController(RestTemplate restTemplate, MockHttpServer mockHttpServer) {
-        this.restTemplate = restTemplate;
+    public WiremockRequestForwardingController(HttpClient httpClient, MockHttpServer mockHttpServer) {
+        this.httpClient = httpClient;
         this.mockHttpServer = mockHttpServer;
     }
 
     @GetMapping("**")
-    public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request) {
-        return forwardRequestForMethod(request, GET);
+    public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request)
+        throws InterruptedException, IOException {
+        String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+        Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
+        transferRequestHeaders(request, requestBuilder);
+
+        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        var responseHeaders = copyResponseHeaders(httpResponse);
+
+        return new ResponseEntity<>(
+            httpResponse.body().getBytes(),
+            responseHeaders,
+            valueOf(httpResponse.statusCode())
+        );
+
     }
 
-
     @PostMapping("**")
-    public ResponseEntity<byte[]> forwardPostRequests(HttpServletRequest request) {
-        return forwardRequestForMethod(request, POST);
+    public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request)
+        throws InterruptedException, IOException {
+        var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+        var requestBody = IOUtils.toString(request.getInputStream());
+        var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody));
+        transferRequestHeaders(request, requestBuilder);
+
+        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        var responseHeaders = copyResponseHeaders(httpResponse);
+
+        return new ResponseEntity<>(
+            httpResponse.body().getBytes(),
+            responseHeaders,
+            valueOf(httpResponse.statusCode())
+        );
+
     }
 
     @PutMapping("**")
-    public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request) {
-        return forwardRequestForMethod(request, PUT);
+    public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request)
+        throws InterruptedException, IOException {
+        var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+        var requestBody = IOUtils.toString(request.getInputStream());
+        var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+            .PUT(HttpRequest.BodyPublishers.ofString(requestBody));
+        transferRequestHeaders(request, requestBuilder);
+
+        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        var responseHeaders = copyResponseHeaders(httpResponse);
+
+        return new ResponseEntity<>(
+            httpResponse.body().getBytes(),
+            responseHeaders,
+            valueOf(httpResponse.statusCode())
+        );
     }
 
     @DeleteMapping("**")
-    public ResponseEntity<byte[]> forwardDeleteRequests(HttpServletRequest request) {
-        return forwardRequestForMethod(request, DELETE);
+    public ResponseEntity<Void> forwardDeleteRequests(HttpServletRequest request)
+        throws InterruptedException, IOException {
+        String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+        Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath))).DELETE();
+        transferRequestHeaders(request, requestBuilder);
+        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        var responseHeaders = copyResponseHeaders(httpResponse);
+
+        return new ResponseEntity<>(responseHeaders, NO_CONTENT);
     }
 
-    private ResponseEntity<byte[]> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
-        try {
-            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-            LOG.info("request path: {}", requestPath);
-            var uri = URI.create(getMockHttpServerUrl(requestPath));
-            LOG.info("creating URI: {}", uri);
-            var requestBody = IOUtils.toString(request.getInputStream());
-            LOG.info("creating request body: {}", requestBody);
-            var headers = copyHeaders(request);
-            LOG.info("copying headers:");
-            headers.forEach((key, value) -> LOG.info(key + ": " + value));
-            var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
-            LOG.info("Forwarding POST request");
-            ResponseEntity<byte[]> exchange = restTemplate.exchange(forwardRequest, byte[].class);
-            LOG.info("http response received for POST request: {}", exchange.getBody());
-            return exchange;
-
-        } catch (IOException e) {
-            LOG.info("Error forwarding request", e);
-            LOG.error(ERROR_OCCURRED, e);
-            return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(e.getMessage().getBytes());
-        }
-    }
-
-    private static LinkedMultiValueMap<String, String> copyHeaders(HttpServletRequest request) {
-        var headerNames = request.getHeaderNames();
-        var headers = new LinkedMultiValueMap<String, String>();
-        while (headerNames.hasMoreElements()) {
-            var headerName = headerNames.nextElement();
-            if (excluded(headerName)) {
-                LOG.info("Excluding header {}", headerName);
-            } else {
-                headers.add(headerName, request.getHeader(headerName));
-                LOG.info("Including header {}", headerName);
+    private static void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
+        request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
+            if (!excluded(headerName)) {
+                requestBuilder.header(headerName, request.getHeader(headerName));
             }
-        }
+        });
+    }
+
+    private static LinkedMultiValueMap<String, String> copyResponseHeaders(HttpResponse<?> response) {
+        var headers = new LinkedMultiValueMap<String, String>();
+
+        response.headers().map()
+            .forEach((key, values) -> {
+
+                headers.add(key, String.join(";", values));
+            });
 
         return headers;
     }
@@ -114,6 +137,7 @@ public class WiremockRequestForwardingController {
     private static boolean excluded(String headerName) {
         return "host".equalsIgnoreCase(headerName)
             || "connection".equalsIgnoreCase(headerName)
+            || "accept-encoding".equalsIgnoreCase(headerName)
             || "content-length".equalsIgnoreCase(headerName);
     }
 
