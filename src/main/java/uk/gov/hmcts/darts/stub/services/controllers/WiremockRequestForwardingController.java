@@ -23,6 +23,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.valueOf;
 
@@ -46,72 +47,91 @@ public class WiremockRequestForwardingController {
     }
 
     @GetMapping("**")
-    public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-        Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
-        transferRequestHeaders(request, requestBuilder);
+    public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request) throws InterruptedException {
+        try {
+            String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
+            transferRequestHeaders(request, requestBuilder);
 
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
+            var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            var responseHeaders = copyResponseHeaders(httpResponse);
 
-        return new ResponseEntity<>(
-            httpResponse.body().getBytes(),
-            responseHeaders,
-            valueOf(httpResponse.statusCode())
-        );
-
+            return new ResponseEntity<byte[]>(
+                httpResponse.body().getBytes(),
+                responseHeaders,
+                valueOf(httpResponse.statusCode()));
+        } catch (IOException e) {
+            LOG.error(ERROR_OCCURRED, e);
+            return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(e.getMessage().getBytes());
+        }
     }
 
+
     @PostMapping("**")
-    public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-        var requestBody = IOUtils.toString(request.getInputStream());
-        var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody));
-        transferRequestHeaders(request, requestBuilder);
+    public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request) throws InterruptedException {
+        try {
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            var requestBody = IOUtils.toString(request.getInputStream());
+            var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody));
+            transferRequestHeaders(request, requestBuilder);
 
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
+            var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            var responseHeaders = copyResponseHeaders(httpResponse);
 
-        return new ResponseEntity<>(
-            httpResponse.body().getBytes(),
-            responseHeaders,
-            valueOf(httpResponse.statusCode())
-        );
-
+            return new ResponseEntity<>(
+                httpResponse.body().getBytes(),
+                responseHeaders,
+                valueOf(httpResponse.statusCode())
+            );
+        } catch (IOException e) {
+            LOG.error(ERROR_OCCURRED, e);
+            return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(e.getMessage().getBytes());
+        }
     }
 
     @PutMapping("**")
-    public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-        var requestBody = IOUtils.toString(request.getInputStream());
-        var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
-            .PUT(HttpRequest.BodyPublishers.ofString(requestBody));
-        transferRequestHeaders(request, requestBuilder);
+    public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request) throws InterruptedException {
+        try {
+            var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            var requestBody = IOUtils.toString(request.getInputStream());
+            var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody));
+            transferRequestHeaders(request, requestBuilder);
 
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
+            var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            var responseHeaders = copyResponseHeaders(httpResponse);
 
-        return new ResponseEntity<>(
-            httpResponse.body().getBytes(),
-            responseHeaders,
-            valueOf(httpResponse.statusCode())
-        );
+            return new ResponseEntity<byte[]>(
+                httpResponse.body().getBytes(),
+                responseHeaders,
+                valueOf(httpResponse.statusCode()));
+        } catch (IOException e) {
+            LOG.error(ERROR_OCCURRED, e);
+            return ResponseEntity
+                .status(INTERNAL_SERVER_ERROR)
+                .body(e.getMessage().getBytes());
+        }
     }
 
     @DeleteMapping("**")
-    public ResponseEntity<Void> forwardDeleteRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-        Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath))).DELETE();
-        transferRequestHeaders(request, requestBuilder);
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
+    public ResponseEntity<Void> forwardDeleteRequests(HttpServletRequest request) throws InterruptedException {
+        try {
+            String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath))).DELETE();
+            transferRequestHeaders(request, requestBuilder);
+            var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+            var responseHeaders = copyResponseHeaders(httpResponse);
 
-        return new ResponseEntity<>(responseHeaders, NO_CONTENT);
+            return new ResponseEntity<>(responseHeaders, NO_CONTENT);
+        } catch (IOException e) {
+            LOG.error(ERROR_OCCURRED, e);
+            return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+        }
     }
 
     private static void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
