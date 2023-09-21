@@ -49,7 +49,6 @@ public class WireMockServerConfig {
             return options()
                 .stubCorsEnabled(false)
                 .dynamicHttpsPort()
-                .gzipDisabled(true)
                 .dynamicPort()
                 .usingFilesUnderDirectory(mappingsPath)
                 .extensions(responseTemplating);
@@ -58,7 +57,6 @@ public class WireMockServerConfig {
             return options()
                 .stubCorsEnabled(false)
                 .dynamicHttpsPort()
-                .gzipDisabled(true)
                 .dynamicPort()
                 .usingFilesUnderClasspath(mappingsPath)
                 .extensions(responseTemplating);
