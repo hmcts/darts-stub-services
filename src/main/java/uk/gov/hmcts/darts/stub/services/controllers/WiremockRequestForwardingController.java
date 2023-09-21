@@ -22,7 +22,6 @@ import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 import java.io.IOException;
 import java.net.URI;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -50,40 +49,40 @@ public class WiremockRequestForwardingController {
     }
 
     @GetMapping("**")
-    public ResponseEntity<String> forwardGetRequests(HttpServletRequest request) {
+    public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request) {
         return forwardRequestForMethod(request, GET);
     }
 
 
     @PostMapping("**")
-    public ResponseEntity<String> forwardPostRequests(HttpServletRequest request) {
+    public ResponseEntity<byte[]> forwardPostRequests(HttpServletRequest request) {
         return forwardRequestForMethod(request, POST);
     }
 
     @PutMapping("**")
-    public ResponseEntity<String> forwardPutRequests(HttpServletRequest request) {
+    public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request) {
         return forwardRequestForMethod(request, PUT);
     }
 
     @DeleteMapping("**")
-    public ResponseEntity<String> forwardDeleteRequests(HttpServletRequest request) {
+    public ResponseEntity<byte[]> forwardDeleteRequests(HttpServletRequest request) {
         return forwardRequestForMethod(request, DELETE);
     }
 
-    private ResponseEntity<String> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
+    private ResponseEntity<byte[]> forwardRequestForMethod(HttpServletRequest request, HttpMethod get) {
         try {
             var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
             LOG.info("request path: {}", requestPath);
             var uri = URI.create(getMockHttpServerUrl(requestPath));
             LOG.info("creating URI: {}", uri);
-            var requestBody = IOUtils.toString(request.getInputStream(), UTF_8);
+            var requestBody = IOUtils.toString(request.getInputStream());
             LOG.info("creating request body: {}", requestBody);
             var headers = copyHeaders(request);
             LOG.info("copying headers:");
             headers.forEach((key, value) -> LOG.info(key + ": " + value));
             var forwardRequest = new RequestEntity<>(requestBody, headers, get, uri);
             LOG.info("Forwarding POST request");
-            ResponseEntity<String> exchange = restTemplate.exchange(forwardRequest, String.class);
+            ResponseEntity<byte[]> exchange = restTemplate.exchange(forwardRequest, byte[].class);
             LOG.info("http response received for POST request: {}", exchange.getBody());
             return exchange;
 
@@ -92,7 +91,7 @@ public class WiremockRequestForwardingController {
             LOG.error(ERROR_OCCURRED, e);
             return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
-                .body(e.getMessage());
+                .body(e.getMessage().getBytes());
         }
     }
 
