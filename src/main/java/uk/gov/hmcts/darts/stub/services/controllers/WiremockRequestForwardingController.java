@@ -2,12 +2,11 @@ package uk.gov.hmcts.darts.stub.services.controllers;
 
 import io.micrometer.core.instrument.util.IOUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,20 +18,24 @@ import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
+import java.util.Set;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.valueOf;
+import static java.net.http.HttpRequest.BodyPublisher;
+import static java.net.http.HttpRequest.BodyPublishers;
+import static java.net.http.HttpRequest.Builder;
+import static java.net.http.HttpRequest.newBuilder;
+import static java.util.Locale.ENGLISH;
 
 @RestController
 @RequestMapping("/")
 @SuppressWarnings("PMD.LawOfDemeter")
 public class WiremockRequestForwardingController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WiremockRequestForwardingController.class);
-    public static final String ERROR_OCCURRED = "Error occurred";
+    private static final String CATCH_ALL_PATH = "**";
+    private static final Set<String> EXCLUDED_HEADERS = Set.of(
+            "host", "connection", "accept-encoding", "content-length"
+    );
 
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
@@ -45,100 +48,65 @@ public class WiremockRequestForwardingController {
         this.mockHttpServer = mockHttpServer;
     }
 
-    @GetMapping("**")
+    @GetMapping(CATCH_ALL_PATH)
     public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-        Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)));
-        transferRequestHeaders(request, requestBuilder);
-
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
-
-        return new ResponseEntity<>(
-            httpResponse.body().getBytes(),
-            responseHeaders,
-            valueOf(httpResponse.statusCode())
-        );
-
+            throws IOException, InterruptedException {
+        return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.GET);
     }
 
-    @PostMapping("**")
-    public ResponseEntity<Object> forwardPostRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+    @PostMapping(CATCH_ALL_PATH)
+    public ResponseEntity<byte[]> forwardPostRequests(HttpServletRequest request)
+            throws IOException, InterruptedException {
         var requestBody = IOUtils.toString(request.getInputStream());
-        var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody));
-        transferRequestHeaders(request, requestBuilder);
-
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
-
-        return new ResponseEntity<>(
-            httpResponse.body().getBytes(),
-            responseHeaders,
-            valueOf(httpResponse.statusCode())
-        );
-
+        return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
 
-    @PutMapping("**")
+    @PutMapping(CATCH_ALL_PATH)
     public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        var requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
+            throws IOException, InterruptedException {
         var requestBody = IOUtils.toString(request.getInputStream());
-        var requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
-            .PUT(HttpRequest.BodyPublishers.ofString(requestBody));
+        return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.PUT);
+    }
+
+    @DeleteMapping(CATCH_ALL_PATH)
+    public ResponseEntity<byte[]> forwardDeleteRequests(HttpServletRequest request)
+            throws IOException, InterruptedException {
+        return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.DELETE);
+    }
+
+    private ResponseEntity<byte[]> forwardRequest(
+            HttpServletRequest request,
+            BodyPublisher bodyPublisher,
+            HttpMethod httpMethod) throws IOException, InterruptedException {
+
+        var requestPath = new AntPathMatcher().extractPathWithinPattern(CATCH_ALL_PATH, request.getRequestURI());
+        var requestBuilder = newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+                .method(httpMethod.name(), bodyPublisher);
+
         transferRequestHeaders(request, requestBuilder);
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
 
         return new ResponseEntity<>(
-            httpResponse.body().getBytes(),
-            responseHeaders,
-            valueOf(httpResponse.statusCode())
+                httpResponse.body().getBytes(),
+                copyResponseHeaders(httpResponse),
+                httpResponse.statusCode()
         );
+
     }
 
-    @DeleteMapping("**")
-    public ResponseEntity<Void> forwardDeleteRequests(HttpServletRequest request)
-        throws InterruptedException, IOException {
-        String requestPath = new AntPathMatcher().extractPathWithinPattern("**", request.getRequestURI());
-        Builder requestBuilder = HttpRequest.newBuilder(URI.create(getMockHttpServerUrl(requestPath))).DELETE();
-        transferRequestHeaders(request, requestBuilder);
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-        var responseHeaders = copyResponseHeaders(httpResponse);
-
-        return new ResponseEntity<>(responseHeaders, NO_CONTENT);
-    }
-
-    private static void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
+    private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
-            if (!excluded(headerName)) {
+            if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
                 requestBuilder.header(headerName, request.getHeader(headerName));
             }
         });
     }
 
-    private static LinkedMultiValueMap<String, String> copyResponseHeaders(HttpResponse<?> response) {
-        var headers = new LinkedMultiValueMap<String, String>();
-
-        response.headers().map()
-            .forEach((key, values) -> {
-
-                headers.add(key, String.join(";", values));
-            });
-
+    private HttpHeaders copyResponseHeaders(HttpResponse<?> response) {
+        HttpHeaders headers = new HttpHeaders();
+        response.headers().map().forEach(headers::addAll);
         return headers;
-    }
-
-    private static boolean excluded(String headerName) {
-        return "host".equalsIgnoreCase(headerName)
-            || "connection".equalsIgnoreCase(headerName)
-            || "accept-encoding".equalsIgnoreCase(headerName)
-            || "content-length".equalsIgnoreCase(headerName);
     }
 
     private String getMockHttpServerUrl(String requestPath) {
