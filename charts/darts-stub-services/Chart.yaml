@@ -3,10 +3,10 @@ appVersion: "1.0"
 description: A Helm chart for darts-stub-services App
 name: darts-stub-services
 home: https://github.com/hmcts/darts-stub-services
-version: 0.0.10
+version: 0.0.11
 maintainers:
   - name: HMCTS darts team
 dependencies:
   - name: java
-    version: 4.2.0
+    version: 5.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
