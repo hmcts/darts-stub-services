@@ -204,7 +204,7 @@ dependencies {
   implementation group: 'io.rest-assured', name: 'rest-assured'
   implementation (group: 'com.github.tomakehurst', name: 'wiremock-jre8-standalone', version: '2.35.1')
 
-  testImplementation(platform('org.junit:junit-bom:5.10.0'))
+  testImplementation(platform('org.junit:junit-bom:5.10.1'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
