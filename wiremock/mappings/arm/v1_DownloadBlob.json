@@ -1,0 +1,10 @@
+{
+  "request": {
+    "urlPathPattern": "/api/v1/downloadBlob/(.*)/(.*)/(.*)",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "base64Body": "RE1QLTE4NDRfRE9XTkxPQURfQkxPQg=="
+  }
+}
