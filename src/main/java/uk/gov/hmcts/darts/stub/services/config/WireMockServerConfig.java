@@ -2,7 +2,6 @@ package uk.gov.hmcts.darts.stub.services.config;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,8 @@ public class WireMockServerConfig {
 
         LOG.info("Stubs registered with wiremock");
         wireMockServer.getStubMappings().forEach(w -> LOG.info("\nRequest : {}, \nResponse: {}", w.getRequest(),
-                w.getResponse()));
+                                                               w.getResponse()
+        ));
 
         return wireMockServer;
     }
@@ -43,23 +43,22 @@ public class WireMockServerConfig {
     private WireMockConfiguration getWireMockConfig() {
         var mappingDirectory = new File(mappingsPath + MAPPINGS_DIRECTORY_NAME);
         LOG.info("Mappings directory path: {}", mappingDirectory.getAbsolutePath());
-        var responseTemplating = new ResponseTemplateTransformer(true);
 
         if (mappingDirectory.isDirectory()) {
             return options()
-                .stubCorsEnabled(false)
-                .dynamicHttpsPort()
-                .dynamicPort()
-                .usingFilesUnderDirectory(mappingsPath)
-                .extensions(responseTemplating);
+                    .stubCorsEnabled(false)
+                    .dynamicHttpsPort()
+                    .dynamicPort()
+                    .usingFilesUnderDirectory(mappingsPath)
+                    .globalTemplating(true);
         } else {
             LOG.info("using classpath resources to resolve mappings");
             return options()
-                .stubCorsEnabled(false)
-                .dynamicHttpsPort()
-                .dynamicPort()
-                .usingFilesUnderClasspath(mappingsPath)
-                .extensions(responseTemplating);
+                    .stubCorsEnabled(false)
+                    .dynamicHttpsPort()
+                    .dynamicPort()
+                    .usingFilesUnderClasspath(mappingsPath)
+                    .globalTemplating(true);
         }
     }
 }
