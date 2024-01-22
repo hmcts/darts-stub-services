@@ -5,6 +5,9 @@
   },
   "response": {
     "status": 200,
-    "base64Body": "RE1QLTE4NDRfRE9XTkxPQURfQkxPQg=="
+    "bodyFileName": "download_blob_test.mp2",
+    "headers": {
+      "Content-Type": "audio/mpeg"
+    }
   }
 }

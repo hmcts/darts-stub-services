@@ -3,6 +3,8 @@ package uk.gov.hmcts.darts.stub.services.controllers;
 import io.micrometer.core.instrument.util.IOUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -49,32 +51,32 @@ public class WiremockRequestForwardingController {
     }
 
     @GetMapping(CATCH_ALL_PATH)
-    public ResponseEntity<byte[]> forwardGetRequests(HttpServletRequest request)
+    public ResponseEntity<Resource> forwardGetRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
         return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.GET);
     }
 
     @PostMapping(CATCH_ALL_PATH)
-    public ResponseEntity<byte[]> forwardPostRequests(HttpServletRequest request)
+    public ResponseEntity<Resource> forwardPostRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
 
     @PutMapping(CATCH_ALL_PATH)
-    public ResponseEntity<byte[]> forwardPutRequests(HttpServletRequest request)
+    public ResponseEntity<Resource> forwardPutRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.PUT);
     }
 
     @DeleteMapping(CATCH_ALL_PATH)
-    public ResponseEntity<byte[]> forwardDeleteRequests(HttpServletRequest request)
+    public ResponseEntity<Resource> forwardDeleteRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
         return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.DELETE);
     }
 
-    private ResponseEntity<byte[]> forwardRequest(
+    private ResponseEntity<Resource> forwardRequest(
             HttpServletRequest request,
             BodyPublisher bodyPublisher,
             HttpMethod httpMethod) throws IOException, InterruptedException {
@@ -85,14 +87,13 @@ public class WiremockRequestForwardingController {
 
         transferRequestHeaders(request, requestBuilder);
 
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
 
         return new ResponseEntity<>(
-                httpResponse.body().getBytes(),
+                new InputStreamResource(httpResponse.body()),
                 copyResponseHeaders(httpResponse),
                 httpResponse.statusCode()
         );
-
     }
 
     private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
