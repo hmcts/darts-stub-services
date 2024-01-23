@@ -50,7 +50,7 @@ public class WireMockServerConfig {
                     .dynamicHttpsPort()
                     .dynamicPort()
                     .usingFilesUnderDirectory(mappingsPath)
-                    .globalTemplating(true);
+                    .globalTemplating(false);
         } else {
             LOG.info("using classpath resources to resolve mappings");
             return options()
@@ -58,7 +58,7 @@ public class WireMockServerConfig {
                     .dynamicHttpsPort()
                     .dynamicPort()
                     .usingFilesUnderClasspath(mappingsPath)
-                    .globalTemplating(true);
+                    .globalTemplating(false);
         }
     }
 }

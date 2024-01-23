@@ -1,0 +1,13 @@
+{
+  "request": {
+    "urlPathPattern": "/api/v1/downloadBlob/(.*)/(.*)/(.*)",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "download_blob_test.mp2",
+    "headers": {
+      "Content-Type": "audio/mpeg"
+    }
+  }
+}
