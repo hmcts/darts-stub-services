@@ -16,7 +16,7 @@
       {
         "matchesJsonPath": {
           "expression": "$.manifest.event_date",
-          "after": "2023-12-31T23:59:59"
+          "before": "2024-01-01T00:00:00"
         }
       }
     ]
@@ -32,9 +32,14 @@
       "objectId": "4bfe4fc7-4e2f-4086-8a0e-146cc4556260",
       "objectType": 1,
       "fileName": "UpdateMetadata-20241801-122819.json",
-      "isError": false,
+      "isError": true,
       "responseStatus": 0,
-      "responseStatusMessages": null
+      "responseStatusMessages": [
+        {
+          "message": "A2Z.Engine.Services.SysLogError.SysLogError, could not find in schema manifest key: event_datee.",
+          "isError": true
+        }
+      ]
     }
   }
 }

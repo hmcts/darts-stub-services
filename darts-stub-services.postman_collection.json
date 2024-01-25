@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "6936c965-9fcb-4068-bcb6-cac213d7b442",
+		"name": "darts-stub-services",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32568371"
+	},
+	"item": [
+		{
+			"name": "/VIQDARNotifyEvent/DARNotifyEvent.asmx",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml;",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:viq=\"http://www.VIQSoultions.com\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <viq:DARNotifyEvent>\n      <XMLEventDocument>\n        <event type=\"1\" Y=\"2023\" M=\"9\" D=\"8\" H=\"14\" MIN=\"15\" S=\"54\">\n          <courthouse>Bristol</courthouse>\n          <courtroom>Court 1</courtroom>\n          <case_numbers>\n            <case_number>T20230907-1</case_number>\n          </case_numbers>\n        </event>\n      </XMLEventDocument>\n    </viq:DARNotifyEvent>\n  </soapenv:Body>\n</soapenv:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/VIQDARNotifyEvent/DARNotifyEvent.asmx",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"VIQDARNotifyEvent",
+						"DARNotifyEvent.asmx"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v3/UpdateMetadata",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"UseGuidsForFields\": false,\n    \"manifest\": {\n        \"event_date\": \"2024-01-01T00:00:00.000Z\"\n    },\n    \"itemId\": \"7683ee65-c7a7-7343-be80-018b8ac13602\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v3/UpdateMetadata",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v3",
+						"UpdateMetadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v3/UpdateMetadata (alt1: isError)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"UseGuidsForFields\": false,\n    \"manifest\": {\n        \"event_date\": \"2023-01-19T00:00:00.000Z\"\n    },\n    \"itemId\": \"7683ee65-c7a7-7343-be80-018b8ac13602\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v3/UpdateMetadata",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v3",
+						"UpdateMetadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/downloadBlob/100/7683ee65-c7a7-7343-be80-018b8ac13602/4bfe4fc7-4e2f-4086-8a0e-146cc4556260",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v1/downloadBlob/100/7683ee65-c7a7-7343-be80-018b8ac13602/4bfe4fc7-4e2f-4086-8a0e-146cc4556260",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"downloadBlob",
+						"100",
+						"7683ee65-c7a7-7343-be80-018b8ac13602",
+						"4bfe4fc7-4e2f-4086-8a0e-146cc4556260"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
