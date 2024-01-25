@@ -36,7 +36,7 @@
       "responseStatus": 0,
       "responseStatusMessages": [
         {
-          "message": "A2Z.Engine.Services.SysLogError.SysLogError, could not find in schema manifest key: event_datee.",
+          "message": "A2Z.Engine.Services.SysLogError.SysLogError, could not find in schema manifest key: event_date.",
           "isError": true
         }
       ]
