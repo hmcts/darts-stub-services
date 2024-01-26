@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v1/token",
+    "headers": {
+      "Content-Type": {
+        "equalTo": "text/plain"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "access_token": "some-token",
+      "token_type": "Bearer",
+      "expires_in": "3600"
+    }
+  }
+}
