@@ -5,17 +5,20 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.darts.stub.services.server.WireMockHttpServer;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @ActiveProfiles({"dev", "functionalTest"})
-@Slf4j
+
 class UpdateMetadataTest {
+    private static final Logger LOG = LoggerFactory.getLogger(WireMockHttpServer.class);
 
     @BeforeEach
     void setUp() {
@@ -24,7 +27,7 @@ class UpdateMetadataTest {
 
     @Test
     void testUpdateMetadata() {
-        log.debug("running UpdateMetadataTest testUpdateMetadata");
+        LOG.debug("running UpdateMetadataTest testUpdateMetadata");
         String body = """
                 {
                     "UseGuidsForFields": false,
@@ -42,7 +45,7 @@ class UpdateMetadataTest {
                 .extract().response();
 
         assertEquals(200, caseResponse.statusCode());
-        log.debug("finished UpdateMetadataTest testUpdateMetadata");
+        LOG.debug("finished UpdateMetadataTest testUpdateMetadata");
     }
 
     private void configureRestAssured() {
