@@ -13,7 +13,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles({"dev", "functionalTest"})
-public class UpdateMetadataTest {
+class UpdateMetadataTest {
 
     @BeforeEach
     void setUp() {
