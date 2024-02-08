@@ -22,7 +22,7 @@ class UpdateMetadataTest {
 
     @Test
     void testUpdateMetadata() {
-
+        System.out.println("running UpdateMetadataTest testUpdateMetadata");
         String body = """
                 {
                     "UseGuidsForFields": false,
@@ -40,6 +40,7 @@ class UpdateMetadataTest {
                 .extract().response();
 
         assertEquals(200, caseResponse.statusCode());
+        System.out.println("finished UpdateMetadataTest testUpdateMetadata");
     }
 
     private void configureRestAssured() {
