@@ -136,6 +136,40 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "/v1/token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "grant_type=password&username=some-username&password=some-password",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v1/token",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"token"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
