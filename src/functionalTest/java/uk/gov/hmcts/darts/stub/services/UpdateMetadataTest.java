@@ -10,14 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.darts.stub.services.server.WireMockHttpServer;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles({"dev", "functionalTest"})
 class UpdateMetadataTest {
-    private static final Logger LOG = LoggerFactory.getLogger(WireMockHttpServer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateMetadataTest.class);
 
     @BeforeEach
     void setUp() {
@@ -37,7 +36,7 @@ class UpdateMetadataTest {
         Response caseResponse = given()
                 .contentType(ContentType.JSON)
                 .when()
-                .baseUri("http://localhost:4551/api/v3/UpdateMetadata")
+                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/UpdateMetadata")
                 .body(body)
                 .post()
                 .then()
@@ -45,6 +44,7 @@ class UpdateMetadataTest {
 
         assertEquals(200, caseResponse.statusCode());
         LOG.debug("finished UpdateMetadataTest testUpdateMetadata");
+        assertEquals("101", caseResponse.jsonPath().getString("cabinetId"));
     }
 
     private void configureRestAssured() {
