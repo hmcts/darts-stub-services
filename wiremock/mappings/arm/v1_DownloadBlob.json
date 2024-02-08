@@ -1,6 +1,6 @@
 {
   "request": {
-    "urlPathPattern": "/api/v1/downloadBlob/(.*)/(.*)/(.*)",
+    "urlPathPattern": "/api/v1/downloadBlob/\\S+/\\S+/\\S+",
     "method": "GET"
   },
   "response": {
