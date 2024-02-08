@@ -2,6 +2,7 @@ package uk.gov.hmcts.darts.stub.services.controllers;
 
 import io.micrometer.core.instrument.util.IOUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -31,6 +32,7 @@ import static java.util.Locale.ENGLISH;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 @SuppressWarnings("PMD.LawOfDemeter")
 public class WiremockRequestForwardingController {
 
@@ -53,6 +55,7 @@ public class WiremockRequestForwardingController {
     @GetMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardGetRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
+        log.debug("getting a get request");
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.GET);
     }
@@ -60,6 +63,7 @@ public class WiremockRequestForwardingController {
     @PostMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPostRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
+        log.debug("getting a post request");
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
@@ -67,6 +71,7 @@ public class WiremockRequestForwardingController {
     @PutMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPutRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
+        log.debug("getting a put request");
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.PUT);
     }
@@ -74,6 +79,7 @@ public class WiremockRequestForwardingController {
     @DeleteMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardDeleteRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
+        log.debug("getting a delete request");
         return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.DELETE);
     }
 
