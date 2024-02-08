@@ -204,6 +204,7 @@ dependencies {
   implementation group: 'io.rest-assured', name: 'rest-assured'
   implementation(group: 'com.github.tomakehurst', name: 'wiremock-jre8-standalone', version: '3.0.1')
   implementation(group: 'org.wiremock', name: 'wiremock-standalone', version: '3.3.1')
+  implementation 'org.projectlombok:lombok:1.18.28'
 
   testImplementation(platform('org.junit:junit-bom:5.10.2'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
