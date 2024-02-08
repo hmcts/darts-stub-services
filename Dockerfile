@@ -7,5 +7,6 @@ COPY build/libs/darts-stub-services.jar /opt/app/
 COPY wiremock/mappings /opt/app/wiremock/mappings
 COPY wiremock/__files /opt/app/wiremock/__files
 
+
 EXPOSE 4551
 CMD [ "darts-stub-services.jar" ]
