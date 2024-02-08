@@ -5,18 +5,17 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.darts.stub.services.server.WireMockHttpServer;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-@ActiveProfiles({"dev", "functionalTest"})
 
+@ActiveProfiles({"dev", "functionalTest"})
 class UpdateMetadataTest {
     private static final Logger LOG = LoggerFactory.getLogger(WireMockHttpServer.class);
 
