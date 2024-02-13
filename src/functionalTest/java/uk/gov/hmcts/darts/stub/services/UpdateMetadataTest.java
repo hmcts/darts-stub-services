@@ -26,7 +26,7 @@ class UpdateMetadataTest {
     @Test
     void testUpdateMetadata() {
         LOG.debug("running UpdateMetadataTest testUpdateMetadata");
-        /*
+        
         String body = """
                 {
                     "UseGuidsForFields": false,
@@ -35,12 +35,6 @@ class UpdateMetadataTest {
                 }
                 """;
 
-         */
-        String body = """
-                {
-                    "UseGuidsForFields": false
-                }
-                """;
         Response caseResponse = given()
                 .contentType(ContentType.JSON)
                 .when()
