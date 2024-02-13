@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/api/v3/UpdateMetadata"
+    "urlPath": "/update"
   },
   "response": {
     "status": 200,
