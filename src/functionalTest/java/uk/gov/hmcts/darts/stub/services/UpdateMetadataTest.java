@@ -36,12 +36,17 @@ class UpdateMetadataTest {
                 """;
 
          */
+        String body = """
+                {
+                    "manifest": {"event_date": "2024-02-01T00:00:00Z"}
+                }
+                """;
         Response caseResponse = given()
                 .contentType(ContentType.JSON)
                 .when()
                 //.baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/UpdateMetadata")
                 .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/update-metadata")
-                //.body(body)
+                .body(body)
                 .post()
                 .then()
                 .extract().response();

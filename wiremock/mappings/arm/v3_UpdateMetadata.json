@@ -1,7 +1,15 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/api/v3/update-metadata"
+    "urlPath": "/api/v3/update-metadata",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": {
+          "expression": "$.manifest.event_date",
+          "after": "2023-12-31T23:59:59Z"
+        }
+      }
+    ]
   },
   "response": {
     "status": 200,
