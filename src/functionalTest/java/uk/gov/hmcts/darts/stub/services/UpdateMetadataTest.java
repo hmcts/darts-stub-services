@@ -40,7 +40,7 @@ class UpdateMetadataTest {
                 .contentType(ContentType.JSON)
                 .when()
                 //.baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/UpdateMetadata")
-                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/update")
+                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/update-metadata")
                 //.body(body)
                 .post()
                 .then()
