@@ -38,7 +38,9 @@ public class WiremockRequestForwardingController {
 
     private static final Logger LOG = LoggerFactory.getLogger(WiremockRequestForwardingController.class);
     private static final String CATCH_ALL_PATH = "**";
-    private static final Set<String> EXCLUDED_HEADERS = Set.of();
+    private static final Set<String> EXCLUDED_HEADERS = Set.of(
+            "host", "connection", "accept-encoding", "content-length", "transfer-encoding"
+    );
 
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
