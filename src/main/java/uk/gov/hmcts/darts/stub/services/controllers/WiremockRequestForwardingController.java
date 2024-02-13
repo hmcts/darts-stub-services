@@ -98,7 +98,7 @@ public class WiremockRequestForwardingController {
         transferRequestHeaders(request, requestBuilder);
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
-
+        LOG.info("got response httpResponse.statusCode() " + httpResponse.statusCode());
         return new ResponseEntity<>(
                 new InputStreamResource(httpResponse.body()),
                 copyResponseHeaders(httpResponse),
@@ -109,7 +109,7 @@ public class WiremockRequestForwardingController {
     private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
             if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
-                LOG.info("Adding header " + headerName);
+                LOG.info("Adding header " + headerName + " header value " + request.getHeader(headerName));
                 requestBuilder.header(headerName, request.getHeader(headerName));
             }
         });
