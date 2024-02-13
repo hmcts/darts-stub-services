@@ -4,10 +4,6 @@
     "urlPath": "/api/v3/UpdateMetadata",
     "bodyPatterns": [
       {
-        "matchesJsonSchema": "{\n  \"type\": \"object\",\n  \"required\": [\n    \"UseGuidsForFields\",\n    \"manifest\",\n    \"itemId\"\n  ],\n  \"properties\": {\n    \"UseGuidsForFields\": {\n      \"type\": \"boolean\"\n    },\n    \"manifest\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"event_date\"\n      ],\n      \"properties\": {\n        \"event_date\": {\n          \"type\": \"string\"\n        }\n      }\n    },\n    \"itemId\": {\n      \"type\": \"string\"\n    }\n  }\n}",
-        "schemaVersion": "V202012"
-      },
-      {
         "matchesJsonPath": {
           "expression": "$.UseGuidsForFields",
           "contains": "false"
