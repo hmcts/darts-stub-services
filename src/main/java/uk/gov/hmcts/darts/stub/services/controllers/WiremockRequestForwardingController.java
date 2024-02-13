@@ -49,17 +49,7 @@ public class WiremockRequestForwardingController {
         this.httpClient = httpClient;
         this.mockHttpServer = mockHttpServer;
     }
-    /*
-    @GetMapping(CATCH_ALL_PATH)
-    public ResponseEntity<Resource> forwardGetRequests(HttpServletRequest request)
-            throws IOException, InterruptedException {
-        LOG.info("getting a get request");
-        var requestBody = IOUtils.toString(request.getInputStream());
-        return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.GET);
-    }
 
-
-    */
     @PostMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPostRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
@@ -67,23 +57,7 @@ public class WiremockRequestForwardingController {
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
-    /*
-    @PutMapping(CATCH_ALL_PATH)
-    public ResponseEntity<Resource> forwardPutRequests(HttpServletRequest request)
-            throws IOException, InterruptedException {
-        LOG.info("getting a put request");
-        var requestBody = IOUtils.toString(request.getInputStream());
-        return forwardRequest(request, BodyPublishers.ofString(requestBody), PUT);
-    }
 
-    @DeleteMapping(CATCH_ALL_PATH)
-    public ResponseEntity<Resource> forwardDeleteRequests(HttpServletRequest request)
-            throws IOException, InterruptedException {
-        LOG.info("getting a delete request");
-        return forwardRequest(request, BodyPublishers.noBody(), DELETE);
-    }
-
-    */
 
     private ResponseEntity<Resource> forwardRequest(
             HttpServletRequest request,
@@ -91,7 +65,7 @@ public class WiremockRequestForwardingController {
             HttpMethod httpMethod) throws IOException, InterruptedException {
         LOG.info("Got a request");
         var requestPath = new AntPathMatcher().extractPathWithinPattern(CATCH_ALL_PATH, request.getRequestURI());
-        LOG.info("requestPath=" + requestPath);
+        LOG.info("requestPath {}", requestPath);
         var requestBuilder = newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .method(httpMethod.name(), bodyPublisher);
 
@@ -100,7 +74,7 @@ public class WiremockRequestForwardingController {
 
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
-        LOG.info("got response httpResponse.statusCode() " + httpResponse.statusCode());
+        LOG.info("got response httpResponse.statusCode() {}", httpResponse.statusCode());
         return new ResponseEntity<>(
                 new InputStreamResource(httpResponse.body()),
                 copyResponseHeaders(httpResponse),
@@ -111,7 +85,7 @@ public class WiremockRequestForwardingController {
     private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
             if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
-                LOG.info("Adding header " + headerName + " header value " + request.getHeader(headerName));
+                LOG.info("Adding header {} header value {}", headerName, request.getHeader(headerName));
                 requestBuilder.header(headerName, request.getHeader(headerName));
             }
         });
