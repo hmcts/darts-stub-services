@@ -11,10 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
@@ -52,7 +49,7 @@ public class WiremockRequestForwardingController {
         this.httpClient = httpClient;
         this.mockHttpServer = mockHttpServer;
     }
-
+    /*
     @GetMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardGetRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
@@ -61,6 +58,8 @@ public class WiremockRequestForwardingController {
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.GET);
     }
 
+
+    */
     @PostMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPostRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
@@ -68,21 +67,23 @@ public class WiremockRequestForwardingController {
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
-
+    /*
     @PutMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPutRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
         LOG.info("getting a put request");
         var requestBody = IOUtils.toString(request.getInputStream());
-        return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.PUT);
+        return forwardRequest(request, BodyPublishers.ofString(requestBody), PUT);
     }
 
     @DeleteMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardDeleteRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
         LOG.info("getting a delete request");
-        return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.DELETE);
+        return forwardRequest(request, BodyPublishers.noBody(), DELETE);
     }
+
+    */
 
     private ResponseEntity<Resource> forwardRequest(
             HttpServletRequest request,
@@ -96,6 +97,7 @@ public class WiremockRequestForwardingController {
 
         LOG.info("about to transfer requestheaders");
         transferRequestHeaders(request, requestBuilder);
+
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
         LOG.info("got response httpResponse.statusCode() " + httpResponse.statusCode());

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.darts.stub.services;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ class WiremockProxyTest extends IntegrationTestBase {
         uri = new URI(baseUrl + PATH);
     }
 
+    @Disabled
     @Test
     void forwardsGetRequests() {
         var result = this.restTemplate.getForEntity(uri, Map.class);
@@ -37,6 +39,7 @@ class WiremockProxyTest extends IntegrationTestBase {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
+    @Disabled
     @Test
     void forwardsPutRequests() {
         var result = this.restTemplate.exchange(uri, HttpMethod.PUT, null, Map.class);
@@ -45,6 +48,7 @@ class WiremockProxyTest extends IntegrationTestBase {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    @Disabled
     @Test
     void forwardsDeleteRequests() {
         var result = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, Map.class);
