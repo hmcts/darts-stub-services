@@ -38,7 +38,7 @@ class UpdateMetadataTest {
          */
         String body = """
                 {
-                    "manifest": {"event_date": "2024-02-01T00:00:00Z"}
+                    "UseGuidsForFields": false
                 }
                 """;
         Response caseResponse = given()

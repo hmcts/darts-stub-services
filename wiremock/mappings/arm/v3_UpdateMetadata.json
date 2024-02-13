@@ -5,8 +5,8 @@
     "bodyPatterns": [
       {
         "matchesJsonPath": {
-          "expression": "$.manifest.event_date",
-          "after": "2023-12-31T23:59:59Z"
+          "expression": "$.UseGuidsForFields",
+          "contains": "false"
         }
       }
     ]
