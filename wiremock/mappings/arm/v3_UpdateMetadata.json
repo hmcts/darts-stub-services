@@ -1,21 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPath": "/api/v3/UpdateMetadata",
-    "bodyPatterns": [
-      {
-        "matchesJsonPath": {
-          "expression": "$.UseGuidsForFields",
-          "contains": "false"
-        }
-      },
-      {
-        "matchesJsonPath": {
-          "expression": "$.manifest.event_date",
-          "after": "2023-12-31T23:59:59"
-        }
-      }
-    ]
+    "urlPath": "/api/v3/UpdateMetadata"
   },
   "response": {
     "status": 200,
