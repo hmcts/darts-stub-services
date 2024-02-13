@@ -56,7 +56,7 @@ public class WiremockRequestForwardingController {
     @GetMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardGetRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        LOG.debug("getting a get request");
+        LOG.info("getting a get request");
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.GET);
     }
@@ -64,7 +64,7 @@ public class WiremockRequestForwardingController {
     @PostMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPostRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        LOG.debug("getting a post request");
+        LOG.info("getting a post request");
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
@@ -72,7 +72,7 @@ public class WiremockRequestForwardingController {
     @PutMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPutRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        LOG.debug("getting a put request");
+        LOG.info("getting a put request");
         var requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.PUT);
     }
@@ -80,7 +80,7 @@ public class WiremockRequestForwardingController {
     @DeleteMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardDeleteRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        LOG.debug("getting a delete request");
+        LOG.info("getting a delete request");
         return forwardRequest(request, BodyPublishers.noBody(), HttpMethod.DELETE);
     }
 
@@ -88,11 +88,13 @@ public class WiremockRequestForwardingController {
             HttpServletRequest request,
             BodyPublisher bodyPublisher,
             HttpMethod httpMethod) throws IOException, InterruptedException {
-
+        LOG.info("Got a request");
         var requestPath = new AntPathMatcher().extractPathWithinPattern(CATCH_ALL_PATH, request.getRequestURI());
+        LOG.info("requestPath=" + requestPath);
         var requestBuilder = newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .method(httpMethod.name(), bodyPublisher);
 
+        LOG.info("about to transfer requestheaders");
         transferRequestHeaders(request, requestBuilder);
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
@@ -107,6 +109,7 @@ public class WiremockRequestForwardingController {
     private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
             if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
+                LOG.info("Adding header " + headerName);
                 requestBuilder.header(headerName, request.getHeader(headerName));
             }
         });
