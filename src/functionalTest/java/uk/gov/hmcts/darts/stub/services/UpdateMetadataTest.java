@@ -26,6 +26,7 @@ class UpdateMetadataTest {
     @Test
     void testUpdateMetadata() {
         LOG.debug("running UpdateMetadataTest testUpdateMetadata");
+        /*
         String body = """
                 {
                     "UseGuidsForFields": false,
@@ -33,11 +34,14 @@ class UpdateMetadataTest {
                     "itemId": "7683ee65-c7a7-7343-be80-018b8ac13602"
                 }
                 """;
+
+         */
         Response caseResponse = given()
                 .contentType(ContentType.JSON)
                 .when()
-                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/UpdateMetadata")
-                .body(body)
+                //.baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/UpdateMetadata")
+                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/update")
+                //.body(body)
                 .post()
                 .then()
                 .extract().response();
