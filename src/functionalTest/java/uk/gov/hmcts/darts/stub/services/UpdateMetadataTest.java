@@ -46,6 +46,20 @@ class UpdateMetadataTest {
         assertEquals("101", caseResponse.jsonPath().getString("cabinetId"));
     }
 
+    @Test
+    void testUpdateMetadataEmpty() {
+        Response caseResponse = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .baseUri("https://darts-stub-services-pr-83.dev.platform.hmcts.net/api/v3/UpdateMetadata")
+                .post()
+                .then()
+                .extract().response();
+
+        assertEquals(200, caseResponse.statusCode());
+        assertEquals("101", caseResponse.jsonPath().getString("cabinetId"));
+    }
+
     private void configureRestAssured() {
         RestAssured.useRelaxedHTTPSValidation();
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
