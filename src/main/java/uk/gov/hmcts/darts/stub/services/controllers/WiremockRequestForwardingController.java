@@ -2,6 +2,8 @@ package uk.gov.hmcts.darts.stub.services.controllers;
 
 import io.micrometer.core.instrument.util.IOUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -33,6 +35,7 @@ import static java.util.Locale.ENGLISH;
 @RequestMapping("/")
 @SuppressWarnings("PMD.LawOfDemeter")
 public class WiremockRequestForwardingController {
+    private static final Logger LOG = LoggerFactory.getLogger(WiremockRequestForwardingController.class);
 
     private static final String CATCH_ALL_PATH = "**";
     private static final Set<String> EXCLUDED_HEADERS = Set.of(
@@ -89,6 +92,7 @@ public class WiremockRequestForwardingController {
         transferRequestHeaders(request, requestBuilder);
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
+        LOG.info("httpResponse.statusCode() {}", httpResponse.statusCode());
 
         return new ResponseEntity<>(
                 new InputStreamResource(httpResponse.body()),
@@ -101,6 +105,7 @@ public class WiremockRequestForwardingController {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
             if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
                 requestBuilder.header(headerName, request.getHeader(headerName));
+                LOG.info("headerName, headerValue {} {}", headerName, request.getHeader(headerName);
             }
         });
     }
