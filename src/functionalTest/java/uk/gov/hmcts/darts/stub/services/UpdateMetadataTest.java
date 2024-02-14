@@ -60,6 +60,27 @@ class UpdateMetadataTest {
         assertEquals("101", caseResponse.jsonPath().getString("cabinetId"));
     }
 
+    @Test
+    void testUpdateMetadataDate() {
+        String body = """
+                {
+                    "date": "2024-01-28T00:00:00"
+                }
+                """;
+
+        Response caseResponse = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .baseUri("https://darts-stub-services-pr-83.dev.platform.hmcts.net/api/v3/UpdateMetadataDate")
+                .body(body)
+                .post()
+                .then()
+                .extract().response();
+
+        assertEquals(200, caseResponse.statusCode());
+        assertEquals("101", caseResponse.jsonPath().getString("cabinetId"));
+    }
+
     private void configureRestAssured() {
         RestAssured.useRelaxedHTTPSValidation();
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
