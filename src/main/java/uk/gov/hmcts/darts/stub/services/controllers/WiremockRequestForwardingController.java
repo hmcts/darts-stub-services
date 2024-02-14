@@ -105,7 +105,7 @@ public class WiremockRequestForwardingController {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
             if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
                 requestBuilder.header(headerName, request.getHeader(headerName));
-                LOG.info("headerName, headerValue {} {}", headerName, request.getHeader(headerName);
+                LOG.info("headerName, headerValue {} {}", headerName, request.getHeader(headerName));
             }
         });
     }
