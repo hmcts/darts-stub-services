@@ -36,7 +36,7 @@ class UpdateMetadataTest {
         Response caseResponse = given()
                 .contentType(ContentType.JSON)
                 .when()
-                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/update-metadata")
+                .baseUri("https://darts-stub-services-pr-79.dev.platform.hmcts.net/api/v3/UpdateMetadata")
                 .body(body)
                 .post()
                 .then()
