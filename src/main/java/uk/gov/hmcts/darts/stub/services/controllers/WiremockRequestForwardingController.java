@@ -20,9 +20,11 @@ import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
 import java.net.http.HttpResponse;
 import java.util.Set;
 
+import static java.lang.String.join;
 import static java.net.http.HttpRequest.BodyPublisher;
 import static java.net.http.HttpRequest.BodyPublishers;
 import static java.net.http.HttpRequest.Builder;
@@ -35,18 +37,22 @@ import static java.util.Locale.ENGLISH;
 public class WiremockRequestForwardingController {
 
     private static final String CATCH_ALL_PATH = "**";
-    private static final Set<String> EXCLUDED_HEADERS = Set.of(
+    private static final Set<String> EXCLUDED_REQUEST_HEADERS = Set.of(
             "host", "connection", "accept-encoding", "content-length", "transfer-encoding"
     );
+
+    private static final Set<String> EXCLUDED_RESPONSE_HEADERS = Set.of(
+            "transfer-encoding", ":status"
+    );
+    private final HttpClient httpClient;
 
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
 
-    private final HttpClient httpClient;
     private final MockHttpServer mockHttpServer;
 
-    public WiremockRequestForwardingController(HttpClient httpClient, MockHttpServer mockHttpServer) {
-        this.httpClient = httpClient;
+    public WiremockRequestForwardingController(MockHttpServer mockHttpServer) {
+        this.httpClient = HttpClient.newBuilder().version(Version.HTTP_1_1).build();
         this.mockHttpServer = mockHttpServer;
     }
 
@@ -99,15 +105,20 @@ public class WiremockRequestForwardingController {
 
     private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
-            if (!EXCLUDED_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
-                requestBuilder.header(headerName, request.getHeader(headerName));
+            if (!EXCLUDED_REQUEST_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
+                var value = request.getHeader(headerName);
+                requestBuilder.header(headerName, value);
             }
         });
     }
 
     private HttpHeaders copyResponseHeaders(HttpResponse<?> response) {
         HttpHeaders headers = new HttpHeaders();
-        response.headers().map().forEach(headers::addAll);
+        response.headers().map().forEach((key, values) -> {
+            if (!EXCLUDED_RESPONSE_HEADERS.contains(key.toLowerCase(ENGLISH))) {
+                headers.add(key, join(",", values));
+            }
+        });
         return headers;
     }
 

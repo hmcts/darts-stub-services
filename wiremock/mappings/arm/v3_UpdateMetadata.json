@@ -1,6 +1,12 @@
 {
   "request": {
     "method": "POST",
+    "headers": {
+      "Content-Type": {
+        "contains": "json"
+      }
+    },
+
     "urlPath": "/api/v3/UpdateMetadata",
     "bodyPatterns": [
       {
