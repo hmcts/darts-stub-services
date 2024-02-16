@@ -48,7 +48,7 @@ public class WiremockRequestForwardingController {
 
     public WiremockRequestForwardingController(MockHttpServer mockHttpServer) {
         this.mockHttpServer = mockHttpServer;
-        this.httpClient = HttpClient.newBuilder().version(Version.HTTP_1_1).build();
+        this.httpClient = HttpClient.newBuilder().version(Version.HTTP_2).build();
 
     }
 
