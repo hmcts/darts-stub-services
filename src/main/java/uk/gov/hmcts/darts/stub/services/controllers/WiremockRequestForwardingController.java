@@ -42,11 +42,9 @@ public class WiremockRequestForwardingController {
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
 
-    private final HttpClient httpClient;
     private final MockHttpServer mockHttpServer;
 
-    public WiremockRequestForwardingController(HttpClient httpClient, MockHttpServer mockHttpServer) {
-        this.httpClient = httpClient;
+    public WiremockRequestForwardingController(MockHttpServer mockHttpServer) {
         this.mockHttpServer = mockHttpServer;
     }
 
@@ -87,6 +85,8 @@ public class WiremockRequestForwardingController {
                 .method(httpMethod.name(), bodyPublisher);
 
         transferRequestHeaders(request, requestBuilder);
+
+        var httpClient = HttpClient.newHttpClient();
 
         var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
 
