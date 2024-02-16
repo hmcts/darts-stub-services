@@ -114,5 +114,4 @@ public class WiremockRequestForwardingController {
     private String getMockHttpServerUrl(String requestPath) {
         return "http://" + mockHttpServerHost + ":" + mockHttpServer.portNumber() + requestPath;
     }
-
 }
