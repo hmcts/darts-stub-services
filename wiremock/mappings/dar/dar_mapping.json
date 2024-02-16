@@ -4,7 +4,7 @@
     "urlPath": "/VIQDARNotifyEvent/DARNotifyEvent.asmx",
     "headers": {
       "Content-Type": {
-        "contains": "text/xml"
+        "contains": "xml"
       }
     }
 

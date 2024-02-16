@@ -20,6 +20,7 @@ import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
 import java.net.http.HttpResponse;
 import java.util.Set;
 
@@ -36,18 +37,19 @@ public class WiremockRequestForwardingController {
 
     private static final String CATCH_ALL_PATH = "**";
     private static final Set<String> EXCLUDED_HEADERS = Set.of(
-            "host", "connection", "accept-encoding", "content-length", "transfer-encoding"
+            "host", "connection", "accept-encoding", "content-length", "transfer-encoding", "Upgrade"
     );
+    private final HttpClient httpClient;
 
     @Value("${wiremock.server.host}")
     private String mockHttpServerHost;
 
-    private final HttpClient httpClient;
     private final MockHttpServer mockHttpServer;
 
-    public WiremockRequestForwardingController(HttpClient httpClient, MockHttpServer mockHttpServer) {
-        this.httpClient = httpClient;
+    public WiremockRequestForwardingController(MockHttpServer mockHttpServer) {
         this.mockHttpServer = mockHttpServer;
+        this.httpClient = HttpClient.newBuilder().version(Version.HTTP_2).build();
+
     }
 
     @GetMapping(CATCH_ALL_PATH)
