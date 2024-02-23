@@ -21,7 +21,7 @@
       {
         "matchesJsonPath": {
           "expression": "$.manifest.event_date",
-          "before": "2024-01-01T00:00:00"
+          "before": "1924-01-01T00:00:00"
         }
       }
     ]
