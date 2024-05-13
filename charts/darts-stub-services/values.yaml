@@ -1,7 +1,7 @@
 java:
   applicationPort: 4551
   image: 'hmctspublic.azurecr.io/darts/stub-services:latest'
-  ingressHost: darts-stub-services-{{ .Values.global.environment }}.platform.hmcts.net
+  ingressHost: darts-stub-services.{{ .Values.global.environment }}.platform.hmcts.net
   aadIdentityName: darts
 #  Uncomment once the vault containing the app insights key has been set up
 #  keyVaults:

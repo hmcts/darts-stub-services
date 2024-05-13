@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for darts-stub-services App
 name: darts-stub-services
 home: https://github.com/hmcts/darts-stub-services
-version: 0.0.16
+version: 0.0.17
 maintainers:
   - name: HMCTS darts team
 dependencies:
