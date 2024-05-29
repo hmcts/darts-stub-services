@@ -4,9 +4,9 @@
     "headers": {
       "Content-Type": {
         "contains": "application/json"
-      },
+      }
+    },
     "urlPath": "/api/v1/availableEntitlementProfiles"
-    }
   },
   "response": {
     "status": 200,
