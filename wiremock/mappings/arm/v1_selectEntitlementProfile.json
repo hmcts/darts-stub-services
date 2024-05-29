@@ -5,7 +5,7 @@
       "Content-Type": {
         "contains": "application/json"
       },
-    "urlPath": "/api/v1/selectEntitlementProfile/\\S+"
+    "urlPathPattern": "/api/v1/selectEntitlementProfile/\\S+"
     }
   },
   "response": {
