@@ -170,67 +170,6 @@
 				}
 			},
 			"response": []
-		},
-    {
-      "name": "/v1/availableEntitlementProfiles",
-      "protocolProfileBehavior": {
-        "disableBodyPruning": true
-      },
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [
-          {
-          "key": "accept",
-          "value": "*/*"
-          }
-        ],
-        "url": {
-          "raw": "{{darts-stub-services-serverUrl}}/api/v1/availableEntitlementProfiles",
-          "host": [
-            "{{darts-stub-services-serverUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "availableEntitlementProfiles"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/v1/selectEntitlementProfile/7683ee65-c7a7-7343-be80-018b8ac13602",
-      "protocolProfileBehavior": {
-        "disableBodyPruning": true
-      },
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [
-          {
-            "key": "accept",
-            "value": "*/*"
-          }
-        ],
-        "url": {
-          "raw": "{{darts-stub-services-serverUrl}}/api/v1/selectEntitlementProfile/7683ee65-c7a7-7343-be80-018b8ac13602",
-          "host": [
-            "{{darts-stub-services-serverUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "selectEntitlementProfile",
-            "7683ee65-c7a7-7343-be80-018b8ac13602"
-          ]
-        }
-      },
-      "response": []
-    }
+		}
 	]
 }
