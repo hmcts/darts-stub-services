@@ -1,12 +1,12 @@
 {
   "request": {
-    "method": "GET",
-    "urlPath": "/api/v1/token",
+    "method": "POST",
     "headers": {
       "Content-Type": {
-        "equalTo": "text/plain"
+        "contains": "text/plain"
       }
-    }
+    },
+    "urlPath": "/api/v1/token"
   },
   "response": {
     "status": 200,
