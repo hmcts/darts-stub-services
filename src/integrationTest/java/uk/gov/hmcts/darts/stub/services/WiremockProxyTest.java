@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +24,7 @@ class WiremockProxyTest extends IntegrationTestBase {
 
     @Test
     void forwardsGetRequests() {
-        var result = this.restTemplate.getForEntity(uri, Map.class);
+        ResponseEntity<Map> result = this.restTemplate.getForEntity(uri, Map.class);
 
         assertThat(result.getBody().get("result")).isEqualTo("content");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -31,7 +32,7 @@ class WiremockProxyTest extends IntegrationTestBase {
 
     @Test
     void forwardsPostRequests() {
-        var result = this.restTemplate.postForEntity(uri, "{}", Map.class);
+        ResponseEntity<Map> result = this.restTemplate.postForEntity(uri, "{}", Map.class);
 
         assertThat(result.getBody().get("result")).isEqualTo("posted");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -39,7 +40,7 @@ class WiremockProxyTest extends IntegrationTestBase {
 
     @Test
     void forwardsPutRequests() {
-        var result = this.restTemplate.exchange(uri, HttpMethod.PUT, null, Map.class);
+        ResponseEntity<Map> result = this.restTemplate.exchange(uri, HttpMethod.PUT, null, Map.class);
 
         assertThat(result.getBody().get("result")).isEqualTo("putted");
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -47,7 +48,7 @@ class WiremockProxyTest extends IntegrationTestBase {
 
     @Test
     void forwardsDeleteRequests() {
-        var result = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, Map.class);
+        ResponseEntity<Map> result = this.restTemplate.exchange(uri, HttpMethod.DELETE, null, Map.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }

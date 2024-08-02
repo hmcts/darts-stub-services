@@ -40,7 +40,9 @@
       "fileName": "UpdateMetadata-20241801-122819.json",
       "isError": false,
       "responseStatus": 0,
-      "responseStatusMessages": null
+      "responseStatusMessages": null,
+      "retConfScore": 10,
+      "retConfReason" : "this is a mock reason"
     }
   }
 }

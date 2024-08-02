@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -30,10 +32,13 @@ class OpenAPIPublisherTest {
 
     @DisplayName("Generate swagger documentation")
     @Test
-    @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+    @SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.LawOfDemeter"})
     void generateDocs() throws Exception {
-        byte[] specs = mvc.perform(get("/v3/api-docs"))
-            .andExpect(status().isOk())
+        MockHttpServletRequestBuilder builder = get("/v3/api-docs");
+        ResultMatcher okMatcher = status().isOk();
+
+        byte[] specs = mvc.perform(builder)
+            .andExpect(okMatcher)
             .andReturn()
             .getResponse()
             .getContentAsByteArray();
