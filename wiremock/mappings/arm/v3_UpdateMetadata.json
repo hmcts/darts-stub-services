@@ -10,7 +10,41 @@
     "urlPath": "/api/v3/UpdateMetadata",
     "bodyPatterns": [
       {
-        "matchesJsonSchema": "{\n  \"type\": \"object\",\n  \"required\": [\n    \"UseGuidsForFields\",\n    \"manifest\",\n    \"itemId\"\n  ],\n  \"properties\": {\n    \"UseGuidsForFields\": {\n      \"type\": \"boolean\"\n    },\n    \"manifest\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"event_date\"\n      ],\n      \"properties\": {\n        \"event_date\": {\n          \"type\": \"string\"\n        }\n      }\n    },\n    \"itemId\": {\n      \"type\": \"string\"\n    }\n  }\n}",
+        "matchesJsonSchema": {
+          "type": "object",
+          "required": [
+            "UseGuidsForFields",
+            "manifest",
+            "itemId"
+          ],
+          "properties": {
+            "UseGuidsForFields": {
+              "type": "boolean"
+            },
+            "manifest": {
+              "type": "object",
+              "required": [
+                "event_date",
+                "ret_conf_score",
+                "ret_conf_reason"
+              ],
+              "properties": {
+                "event_date": {
+                  "type": "string"
+                },
+                "ret_conf_score": {
+                  "type": "integer"
+                },
+                "ret_conf_reason": {
+                  "type": "string"
+                }
+              }
+            },
+            "itemId": {
+              "type": "string"
+            }
+          }
+        },
         "schemaVersion": "V202012"
       },
       {
@@ -40,9 +74,7 @@
       "fileName": "UpdateMetadata-20241801-122819.json",
       "isError": false,
       "responseStatus": 0,
-      "responseStatusMessages": null,
-      "retConfScore": 10,
-      "retConfReason" : "this is a mock reason"
+      "responseStatusMessages": null
     }
   }
 }

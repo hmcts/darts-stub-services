@@ -30,7 +30,17 @@ class UpdatedProxyTest extends IntegrationTestBase {
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.put("Content-Type", List.of("application/json"));
         HttpEntity<String> entity = new HttpEntity<>(
-            "{\"UseGuidsForFields\":false,\"manifest\":{\"event_date\":\"2024-08-02T10:29:47.676644+01:00\"},\"itemId\":\"2\"}", headers);
+            """
+                {
+                    "UseGuidsForFields": false,
+                    "manifest": {
+                        "event_date":"2024-12-31T23:59:59",
+                        "ret_conf_score": 2,
+                        "ret_conf_reason": "test reason"
+                    },
+                    "itemId": "2"
+                }
+                """, headers);
 
         ResponseEntity<Map> result = this.restTemplate.postForEntity(uri, entity, Map.class);
 
@@ -42,8 +52,6 @@ class UpdatedProxyTest extends IntegrationTestBase {
         assertThat(result.getBody().get("isError")).isEqualTo(false);
         assertThat(result.getBody().get("responseStatus")).isEqualTo(0);
         assertThat(result.getBody().get("responseStatusMessages")).isEqualTo(null);
-        assertThat(result.getBody().get("retConfScore")).isEqualTo(10);
-        assertThat(result.getBody().get("retConfReason")).isEqualTo("this is a mock reason");
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
