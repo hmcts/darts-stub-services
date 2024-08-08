@@ -30,7 +30,7 @@ public class WireMockServerConfig {
     public WireMockServer wireMockServer() {
         LOG.info("WireMock mappings file path: {}", mappingsPath);
 
-        var wireMockServer = new WireMockServer(getWireMockConfig());
+        WireMockServer wireMockServer = new WireMockServer(getWireMockConfig());
 
         LOG.info("Stubs registered with wiremock");
         wireMockServer.getStubMappings().forEach(w -> LOG.info("\nRequest : {}, \nResponse: {}", w.getRequest(),
@@ -41,7 +41,7 @@ public class WireMockServerConfig {
     }
 
     private WireMockConfiguration getWireMockConfig() {
-        var mappingDirectory = new File(mappingsPath + MAPPINGS_DIRECTORY_NAME);
+        File mappingDirectory = new File(mappingsPath + MAPPINGS_DIRECTORY_NAME);
         LOG.info("Mappings directory path: {}", mappingDirectory.getAbsolutePath());
 
         if (mappingDirectory.isDirectory()) {

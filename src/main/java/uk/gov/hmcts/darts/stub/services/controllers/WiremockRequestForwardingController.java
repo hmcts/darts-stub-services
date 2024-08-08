@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.darts.stub.services.server.MockHttpServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Set;
 
@@ -59,21 +62,21 @@ public class WiremockRequestForwardingController {
     @GetMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardGetRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        var requestBody = IOUtils.toString(request.getInputStream());
+        String requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.GET);
     }
 
     @PostMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPostRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        var requestBody = IOUtils.toString(request.getInputStream());
+        String requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.POST);
     }
 
     @PutMapping(CATCH_ALL_PATH)
     public ResponseEntity<Resource> forwardPutRequests(HttpServletRequest request)
             throws IOException, InterruptedException {
-        var requestBody = IOUtils.toString(request.getInputStream());
+        String requestBody = IOUtils.toString(request.getInputStream());
         return forwardRequest(request, BodyPublishers.ofString(requestBody), HttpMethod.PUT);
     }
 
@@ -88,13 +91,13 @@ public class WiremockRequestForwardingController {
             BodyPublisher bodyPublisher,
             HttpMethod httpMethod) throws IOException, InterruptedException {
 
-        var requestPath = new AntPathMatcher().extractPathWithinPattern(CATCH_ALL_PATH, request.getRequestURI());
-        var requestBuilder = newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
+        String requestPath = new AntPathMatcher().extractPathWithinPattern(CATCH_ALL_PATH, request.getRequestURI());
+        HttpRequest.Builder requestBuilder = newBuilder(URI.create(getMockHttpServerUrl(requestPath)))
                 .method(httpMethod.name(), bodyPublisher);
 
         transferRequestHeaders(request, requestBuilder);
 
-        var httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
+        HttpResponse<InputStream> httpResponse = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofInputStream());
 
         return new ResponseEntity<>(
                 new InputStreamResource(httpResponse.body()),
@@ -106,14 +109,14 @@ public class WiremockRequestForwardingController {
     private void transferRequestHeaders(HttpServletRequest request, Builder requestBuilder) {
         request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
             if (!EXCLUDED_REQUEST_HEADERS.contains(headerName.toLowerCase(ENGLISH))) {
-                var value = request.getHeader(headerName);
+                String value = request.getHeader(headerName);
                 requestBuilder.header(headerName, value);
             }
         });
     }
 
-    private HttpHeaders copyResponseHeaders(HttpResponse<?> response) {
-        HttpHeaders headers = new HttpHeaders();
+    private MultiValueMap<String, String>  copyResponseHeaders(HttpResponse<?> response) {
+        MultiValueMap<String, String> headers = new HttpHeaders();
         response.headers().map().forEach((key, values) -> {
             if (!EXCLUDED_RESPONSE_HEADERS.contains(key.toLowerCase(ENGLISH))) {
                 headers.add(key, join(",", values));
