@@ -35,8 +35,8 @@ class UpdatedProxyTest extends IntegrationTestBase {
                     "UseGuidsForFields": false,
                     "manifest": {
                         "event_date":"2024-12-31T23:59:59",
-                        "rtn_score": 2,
-                        "rtn_reason": "test reason"
+                        "ret_conf_score": 2,
+                        "ret_conf_reason": "test reason"
                     },
                     "itemId": "2"
                 }
