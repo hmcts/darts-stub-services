@@ -56,7 +56,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"UseGuidsForFields\": false,\n    \"manifest\": {\n        \"event_date\": \"2024-01-01T00:00:00.000Z\",\n  \"rtn_score\": 1,\n     \"rtn_reason\": \"CASE_CLOSED\"\n    },\n    \"itemId\": \"7683ee65-c7a7-7343-be80-018b8ac13602\"\n}",
+					"raw": "{\n    \"UseGuidsForFields\": false,\n    \"manifest\": {\n        \"event_date\": \"2024-01-01T00:00:00.000Z\",\n  \"ret_conf_score\": 1,\n     \"ret_conf_reason\": \"CASE_CLOSED\"\n    },\n    \"itemId\": \"7683ee65-c7a7-7343-be80-018b8ac13602\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -89,7 +89,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"UseGuidsForFields\": false,\n    \"manifest\": {\n        \"event_date\": \"1923-01-19T00:00:00.000Z\",\n  \"rtn_score\": 1,\n     \"rtn_reason\": \"CASE_CLOSED\"\n     },\n    \"itemId\": \"7683ee65-c7a7-7343-be80-018b8ac13602\"\n}",
+					"raw": "{\n    \"UseGuidsForFields\": false,\n    \"manifest\": {\n        \"event_date\": \"1923-01-19T00:00:00.000Z\",\n  \"ret_conf_score\": 1,\n     \"ret_conf_reason\": \"CASE_CLOSED\"\n     },\n    \"itemId\": \"7683ee65-c7a7-7343-be80-018b8ac13602\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

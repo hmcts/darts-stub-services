@@ -25,17 +25,17 @@
               "type": "object",
               "required": [
                 "event_date",
-                "rtn_score",
-                "rtn_reason"
+                "ret_conf_score",
+                "ret_conf_reason"
               ],
               "properties": {
                 "event_date": {
                   "type": "string"
                 },
-                "rtn_score": {
+                "ret_conf_score": {
                   "type": "integer"
                 },
-                "rtn_reason": {
+                "ret_conf_reason": {
                   "type": "string"
                 }
               }
