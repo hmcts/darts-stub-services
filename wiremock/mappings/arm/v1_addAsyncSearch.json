@@ -19,70 +19,14 @@
       "Content-Type": "application/json"
     },
     "jsonBody": {
-      "queryTree": {
-        "operator": 1,
-        "children": [
-          {
-            "field": {
-              "dataScopeEntitlementNotApplied": true,
-              "removable": false,
-              "draggable": false,
-              "fixedField": true,
-              "history": false,
-              "error": false,
-              "name": "record_class",
-              "valueType": 32,
-              "value": [
-                "DARTS"
-              ]
-            }
-          },
-          {
-            "field": {
-              "dataScopeEntitlementNotApplied": false,
-              "removable": true,
-              "draggable": true,
-              "fixedField": false,
-              "history": false,
-              "error": false,
-              "valueType": 7,
-              "name": "ingestionDate",
-              "value": [
-                "2024-08-12T23:00:00.000Z",
-                "2024-08-13T23:00:00.000Z"
-              ]
-            }
-          }
-        ]
-      },
-      "queryTreeWithin": {
-        "operator": 1,
-        "children": [
-          {
-            "field": {
-              "dataScopeEntitlementNotApplied": false,
-              "removable": true,
-              "draggable": true,
-              "fixedField": false,
-              "history": false,
-              "error": false,
-              "valueType": -1,
-              "name": "",
-              "value": []
-            }
-          }
-        ]
-      },
-      "queryFields": {},
-      "clientTimezone": "Europe/London",
-      "timezone": "Europe/London",
-      "matterId": "cb70c7fa-8972-4400-af1d-ff5dd76d2104",
-      "entitlementId": "96293900-5082-4051-bbad-c961fb22091d",
-      "indexId": "c19454c6-c378-43c1-ae59-d0d013e30915",
-      "sortingField": "90ee0e13-8639-4c4a-b542-66b6c8911549",
-      "sortingType": 1,
-      "name": "DARTS_RPO_2024-08-13",
-      "searchName": "DARTS_RPO_2024-08-13"
+      "searchId": "8271f101-8c14-4c41-8865-edc5d8baed99",
+      "status": 200,
+      "demoMode": false,
+      "isError": false,
+      "responseStatus": 0,
+      "responseStatusMessages": null,
+      "exception": null,
+      "message": null
     }
   }
 }
