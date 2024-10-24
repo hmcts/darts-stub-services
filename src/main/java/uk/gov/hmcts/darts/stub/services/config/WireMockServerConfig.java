@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
@@ -26,11 +27,19 @@ public class WireMockServerConfig {
         this.mappingsPath = mappingsPath;
     }
 
+    @Autowired
+    private List<RuleRegistrable> dynamicRules;
+
     @Bean
     public WireMockServer wireMockServer() {
         LOG.info("WireMock mappings file path: {}", mappingsPath);
 
-        WireMockServer wireMockServer = new WireMockServer(getWireMockConfig());
+        WireMockConfiguration configuration = getWireMockConfig();
+        dynamicRules.stream().forEach(rule -> rule.registerExtension(configuration));
+
+        WireMockServer wireMockServer = new WireMockServer(configuration);
+
+        dynamicRules.stream().forEach(rule -> rule.register(wireMockServer, configuration));
 
         LOG.info("Stubs registered with wiremock");
         wireMockServer.getStubMappings().forEach(w -> LOG.info("\nRequest : {}, \nResponse: {}", w.getRequest(),
@@ -61,4 +70,6 @@ public class WireMockServerConfig {
                     .globalTemplating(false);
         }
     }
+
+
 }

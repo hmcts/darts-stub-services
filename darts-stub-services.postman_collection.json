@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "6936c965-9fcb-4068-bcb6-cac213d7b442",
+		"_postman_id": "2707a5b1-d5b7-4f7d-8606-332ff6c8dfa4",
 		"name": "darts-stub-services",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "32568371"
+		"_exporter_id": "15829068",
+		"_collection_link": "https://speeding-resonance-716248.postman.co/workspace/darts-stub~27ed23df-2674-4a7f-ada1-0c09b1803435/collection/15829068-2707a5b1-d5b7-4f7d-8606-332ff6c8dfa4?action=share&source=collection_link&creator=15829068"
 	},
 	"item": [
 		{
@@ -171,66 +172,92 @@
 			},
 			"response": []
 		},
-    {
-      "name": "/v1/availableEntitlementProfiles",
-      "protocolProfileBehavior": {
-        "disableBodyPruning": true
-      },
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [
-          {
-          "key": "accept",
-          "value": "*/*"
-          }
-        ],
-        "url": {
-          "raw": "{{darts-stub-services-serverUrl}}/api/v1/availableEntitlementProfiles",
-          "host": [
-            "{{darts-stub-services-serverUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "availableEntitlementProfiles"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "/v1/selectEntitlementProfile/7683ee65-c7a7-7343-be80-018b8ac13602",
-      "protocolProfileBehavior": {
-        "disableBodyPruning": true
-      },
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [
-          {
-            "key": "accept",
-            "value": "*/*"
-          }
-        ],
-        "url": {
-          "raw": "{{darts-stub-services-serverUrl}}/api/v1/selectEntitlementProfile/7683ee65-c7a7-7343-be80-018b8ac13602",
-          "host": [
-            "{{darts-stub-services-serverUrl}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "selectEntitlementProfile",
-            "7683ee65-c7a7-7343-be80-018b8ac13602"
-          ]
-        }
-      },
-      "response": []
-    }
+		{
+			"name": "/v1/availableEntitlementProfiles",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v1/availableEntitlementProfiles",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"availableEntitlementProfiles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/selectEntitlementProfile/7683ee65-c7a7-7343-be80-018b8ac13602",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v1/selectEntitlementProfile/7683ee65-c7a7-7343-be80-018b8ac13602",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"selectEntitlementProfile",
+						"7683ee65-c7a7-7343-be80-018b8ac13602"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "EOD_IDS",
+						"value": "1,2,3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{darts-stub-services-serverUrl}}/api/v1/downloadProduction/test/false",
+					"host": [
+						"{{darts-stub-services-serverUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"downloadProduction",
+						"test",
+						"false"
+					]
+				}
+			},
+			"response": []
+		}
 	]
 }
