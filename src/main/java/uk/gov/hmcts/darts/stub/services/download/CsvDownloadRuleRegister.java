@@ -18,7 +18,7 @@ public class CsvDownloadRuleRegister implements RuleRegistrable {
     public void register(WireMockServer wireMockServer, WireMockConfiguration configuration) {
         wireMockServer.stubFor(get(urlPathMatching("/api/v1/downloadProduction/([A-Za-z\\-]+)/false"))
                                    .withHeader("Content-type", equalTo("application/json"))
-                                   .willReturn(aResponse().withTransformers(getTransformerName(getTransformer()))
+                                   .willReturn(aResponse().withTransformers(CsvDownloadBodyTransformer.TRANSFORMER_NAME)
                                                    .withHeader("Content-Type", "application/csv")
                                                    .withStatus(200)));
     }
@@ -30,13 +30,5 @@ public class CsvDownloadRuleRegister implements RuleRegistrable {
 
     private Class<? extends Extension> getTransformer() {
         return CsvDownloadBodyTransformer.class;
-    }
-
-    private String getTransformerName(Class<? extends Extension> cls) {
-        try {
-            return cls.getConstructor(cls, null).getName();
-        } catch (NoSuchMethodException e) {
-            return CsvDownloadBodyTransformer.TRANSFORMER_NAME;
-        }
     }
 }

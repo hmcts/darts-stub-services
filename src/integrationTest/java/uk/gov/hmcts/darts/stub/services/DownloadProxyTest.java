@@ -12,12 +12,9 @@ import uk.gov.hmcts.darts.stub.services.download.CsvUtil;
 import uk.gov.hmcts.darts.stub.services.download.DownloadCsvRecord;
 import uk.gov.hmcts.darts.stub.services.download.EodRequestWrapper;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,9 +52,6 @@ class DownloadProxyTest extends IntegrationTestBase {
         Assertions.assertEquals(Integer.toString(eodId1), records.get(0).getClientIdentifier());
         Assertions.assertEquals(Integer.toString(eodId2), records.get(1).getClientIdentifier());
         Assertions.assertEquals(Integer.toString(eodId3), records.get(2).getClientIdentifier());
-        Assertions.assertFalse(anyNull(records.get(0)));
-        Assertions.assertFalse(anyNull(records.get(1)));
-        Assertions.assertFalse(anyNull(records.get(2)));
         assertAllOtherThanClientIdAreSame(CsvUtil.toDownloadCsvRecord(CsvUtil.getExpectedData()).get(0), records.get(0));
         assertAllOtherThanClientIdAreSame(CsvUtil.toDownloadCsvRecord(CsvUtil.getExpectedData()).get(0), records.get(1));
         assertAllOtherThanClientIdAreSame(CsvUtil.toDownloadCsvRecord(CsvUtil.getExpectedData()).get(0), records.get(2));
@@ -75,7 +69,6 @@ class DownloadProxyTest extends IntegrationTestBase {
         List<DownloadCsvRecord> records = CsvUtil.toDownloadCsvRecord(result.getBody());
         Assertions.assertEquals(1, records.size());
         Assertions.assertEquals("100", records.get(0).getClientIdentifier());
-        Assertions.assertFalse(anyNull(records.get(0)));
         assertAllOtherThanClientIdAreSame(CsvUtil.toDownloadCsvRecord(CsvUtil.getExpectedData()).get(0), records.get(0));
     }
 
@@ -90,7 +83,6 @@ class DownloadProxyTest extends IntegrationTestBase {
         List<DownloadCsvRecord> records = CsvUtil.toDownloadCsvRecord(result.getBody());
         Assertions.assertEquals(1, records.size());
         Assertions.assertEquals("Client Identifier", records.get(0).getClientIdentifier());
-        Assertions.assertFalse(anyNull(records.get(0)));
         Assertions.assertEquals(CsvUtil.toDownloadCsvRecord(CsvUtil.getExpectedData()).get(0), records.get(0));
     }
 
@@ -98,22 +90,5 @@ class DownloadProxyTest extends IntegrationTestBase {
         expected.setClientIdentifier("Client Identifier");
         actual.setClientIdentifier("Client Identifier");
         Assertions.assertEquals(expected, actual);
-    }
-
-    @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
-    public static boolean anyNull(Object target) {
-        return Arrays.stream(target.getClass()
-                                 .getDeclaredFields())
-            .peek(f -> f.setAccessible(true))
-            .map(f -> getFieldValue(f, target))
-            .anyMatch(Objects::isNull);
-    }
-
-    private static Object getFieldValue(Field field, Object target) {
-        try {
-            return field.get(target);
-        } catch (IllegalAccessException e) {
-            throw new AssertionError(e);
-        }
     }
 }

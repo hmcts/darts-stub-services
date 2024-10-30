@@ -5,8 +5,7 @@ import com.github.tomakehurst.wiremock.http.Response;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,10 +14,9 @@ import java.util.List;
 /**
  * Wire mock transformer that rewrites the body with csv records according to the eods that exist in the request header.
  */
+@Slf4j
 public class CsvDownloadBodyTransformer implements ResponseTransformerV2 {
     public static final String TRANSFORMER_NAME = "csv_download_transformer";
-
-    private static final Logger LOG = LoggerFactory.getLogger(CsvDownloadBodyTransformer.class);
 
     @Override
     public Response transform(Response response, ServeEvent serveEvent) {
@@ -44,7 +42,7 @@ public class CsvDownloadBodyTransformer implements ResponseTransformerV2 {
                     .build();
             }
         } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException ex) {
-            LOG.error("Something went wrong when transforming the body", ex);
+            log.error("Something went wrong when transforming the body", ex);
             returnResponse = Response.Builder.like(response).body("Something went wrong %s".formatted(ex.getMessage()))
                 .status(500).build();
         }
