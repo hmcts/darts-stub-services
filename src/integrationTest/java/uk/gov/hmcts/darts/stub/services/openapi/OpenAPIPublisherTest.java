@@ -32,7 +32,7 @@ class OpenAPIPublisherTest {
 
     @DisplayName("Generate swagger documentation")
     @Test
-    @SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.LawOfDemeter"})
+    @SuppressWarnings({"PMD.UnitTestShouldIncludeAssert", "PMD.LawOfDemeter"})
     void generateDocs() throws Exception {
         MockHttpServletRequestBuilder builder = get("/v3/api-docs");
         ResultMatcher okMatcher = status().isOk();
