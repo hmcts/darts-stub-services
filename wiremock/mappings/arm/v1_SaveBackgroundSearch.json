@@ -9,7 +9,7 @@
     "urlPath": "/api/v1/SaveBackgroundSearch",
     "bodyPatterns": [
       {
-        "equalToJson": "{\"name\":\"DARTS_RPO_2024-08-13\",\"searchId\":\"8271f101-8c14-4c41-8865-edc5d8baed99\"}"
+        "equalToJson": "{\"name\":\"${json-unit.any-string}\",\"searchId\":\"8271f101-8c14-4c41-8865-edc5d8baed99\"}"
       }
     ]
   },
