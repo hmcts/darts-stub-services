@@ -3,10 +3,10 @@
     "method": "POST",
     "headers": {
       "Content-Type": {
-        "contains": "text/plain"
+        "contains": "application/json"
       }
     },
-    "urlPath": "/api/v1/token"
+    "urlPath": "/auth/account/token"
   },
   "response": {
     "status": 200,
