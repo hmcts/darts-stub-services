@@ -6,7 +6,12 @@
         "contains": "application/json"
       }
     },
-    "urlPath": "/api/v1/getRecordManagementMatter"
+    "urlPath": "/api/v1/getRecordManagementMatter",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{}"
+      }
+    ]
   },
   "response": {
     "status": 200,
