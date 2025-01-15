@@ -6,7 +6,12 @@
         "contains": "application/json"
       }
     },
-    "urlPathPattern": "/api/v1/selectEntitlementProfile/\\S+"
+    "urlPathPattern": "/api/v1/selectEntitlementProfile/\\S+",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{}"
+      }
+    ]
   },
   "response": {
     "status": 200,
