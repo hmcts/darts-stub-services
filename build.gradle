@@ -11,7 +11,7 @@ plugins {
   id "io.freefair.lombok" version "8.13.1"
 }
 
-group = 'uk.gov.hmcts.darts'
+group 'com.github.hmcts'
 version = '0.0.1'
 
 java {
@@ -208,7 +208,7 @@ dependencyCheck {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1' }
 }
 
 ext {
