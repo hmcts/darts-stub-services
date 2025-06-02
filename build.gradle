@@ -231,7 +231,7 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
   implementation(group: 'org.wiremock', name: 'wiremock-standalone', version: '3.13.0')
-  implementation 'com.opencsv:opencsv:5.11'
+  implementation 'com.opencsv:opencsv:5.11.1'
 
   testImplementation(platform('org.junit:junit-bom:5.12.2'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
