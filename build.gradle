@@ -233,7 +233,7 @@ dependencies {
   implementation(group: 'org.wiremock', name: 'wiremock-standalone', version: '3.13.0')
   implementation 'com.opencsv:opencsv:5.11.2'
 
-  testImplementation(platform('org.junit:junit-bom:5.13.0'))
+  testImplementation(platform('org.junit:junit-bom:5.13.2'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
