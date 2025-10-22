@@ -1,0 +1,79 @@
+{
+  "request": {
+    "method": "POST",
+    "headers": {
+      "Content-Type": {
+        "contains": "json"
+      }
+    },
+    "urlPath": "/v3/UpdateMetadata",
+    "bodyPatterns": [
+      {
+        "matchesJsonSchema": {
+          "type": "object",
+          "required": [
+            "UseGuidsForFields",
+            "manifest",
+            "itemId"
+          ],
+          "properties": {
+            "UseGuidsForFields": {
+              "type": "boolean"
+            },
+            "manifest": {
+              "type": "object",
+              "required": [
+                "event_date",
+                "ret_conf_score",
+                "ret_conf_reason"
+              ],
+              "properties": {
+                "event_date": {
+                  "type": "string"
+                },
+                "ret_conf_score": {
+                  "type": "integer"
+                },
+                "ret_conf_reason": {
+                  "type": "string"
+                }
+              }
+            },
+            "itemId": {
+              "type": "string"
+            }
+          }
+        },
+        "schemaVersion": "V202012"
+      },
+      {
+        "matchesJsonPath": {
+          "expression": "$.UseGuidsForFields",
+          "contains": "false"
+        }
+      },
+      {
+        "matchesJsonPath": {
+          "expression": "$.manifest.event_date",
+          "after": "1923-12-31T23:59:59"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "itemId": "7683ee65-c7a7-7343-be80-018b8ac13602",
+      "cabinetId": 101,
+      "objectId": "4bfe4fc7-4e2f-4086-8a0e-146cc4556260",
+      "objectType": 1,
+      "fileName": "UpdateMetadata-20241801-122819.json",
+      "isError": false,
+      "responseStatus": 0,
+      "responseStatusMessages": null
+    }
+  }
+}
