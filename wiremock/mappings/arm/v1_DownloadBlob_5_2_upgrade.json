@@ -1,0 +1,13 @@
+{
+  "request": {
+    "urlPathPattern": "/v1/downloadBlob/\\S+/\\S+/\\S+",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "download_blob_test.mp2",
+    "headers": {
+      "Content-Type": "application/octet-stream"
+    }
+  }
+}
