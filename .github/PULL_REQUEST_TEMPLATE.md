@@ -13,17 +13,13 @@ Please remove this line and everything above and fill the following sections:
 ### Change description ###
 
 
-[ ] AI-assisted
+- [ ] AI-assisted
 
 ### AI Specific Change Description ###
 
 
 Short description: what Codex was used for and what was changed/validated by the engineer
 
-**Was this change authored or substantially assisted by AI?** (check one with "x")
-
-- [ ] Yes
-- [ ] No
 
 **Does this PR introduce a breaking change?** (check one with "x")
 
